@@ -1,0 +1,253 @@
+<%- include('./partials/header') %>
+<%- include('./partials/adminsidebar') %>
+
+<style>
+  /* Add any additional custom styles here */
+  body {
+      padding-top: 10%;
+      background-color: #f8f9fa;
+  }
+
+  .product-details {
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      padding: 15px;
+      background-color: #fff;
+  }
+
+  .product-image {
+      max-width: 60px;
+      max-height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+  }
+
+  .status-dropdown,
+  .submit-button {
+      margin-top: 10px;
+  }
+</style>
+
+
+<body>
+    <nav class="navbar navbar-expand-lg main-navbar sticky">
+        <div class="form-inline mr-auto">
+          <ul class="navbar-nav mr-3">
+            <li><a href="#" data-toggle="sidebar" class="nav-link nav-link-lg
+                                    collapse-btn"> <i data-feather="align-justify"></i></a></li>
+            <li><a href="#" class="nav-link nav-link-lg fullscreen-btn">
+                <i data-feather="maximize"></i>
+              </a></li>
+            <li>
+              <form class="form-inline mr-auto">
+                <div class="search-element">
+                  <input class="form-control" type="search" placeholder="Search" aria-label="Search" data-width="200">
+                  <button class="btn" type="submit">
+                    <i class="fas fa-search"></i>
+                  </button>
+                </div>
+              </form>
+            </li>
+          </ul>
+        </div>
+        <ul class="navbar-nav navbar-right">
+          <li class="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown"
+              class="nav-link nav-link-lg message-toggle"><i data-feather="mail"></i>
+              <span class="badge headerBadge1">
+                6 </span> </a>
+            <div class="dropdown-menu dropdown-list dropdown-menu-right pullDown">
+              <div class="dropdown-header">
+                Messages
+                <div class="float-right">
+                  <a href="#">Mark All As Read</a>
+                </div>
+              </div>
+              <div class="dropdown-list-content dropdown-list-message">
+                <a href="#" class="dropdown-item"> <span class="dropdown-item-avatar
+                                            text-white"> <img alt="image" src="/adminassets/img/users/user-1.png" class="rounded-circle">
+                  </span> <span class="dropdown-item-desc"> <span class="message-user">John
+                      Deo</span>
+                    <span class="time messege-text">Please check your mail !!</span>
+                    <span class="time">2 Min Ago</span>
+                  </span>
+                </a> <a href="#" class="dropdown-item"> <span class="dropdown-item-avatar text-white">
+                    <img alt="image" src="/adminassets/img/users/user-2.png" class="rounded-circle">
+                  </span> <span class="dropdown-item-desc"> <span class="message-user">Sarah
+                      Smith</span> <span class="time messege-text">Request for leave
+                      application</span>
+                    <span class="time">5 Min Ago</span>
+                  </span>
+                </a> <a href="#" class="dropdown-item"> <span class="dropdown-item-avatar text-white">
+                    <img alt="image" src="/adminassets/img/users/user-5.png" class="rounded-circle">
+                  </span> <span class="dropdown-item-desc"> <span class="message-user">Jacob
+                      Ryan</span> <span class="time messege-text">Your payment invoice is
+                      generated.</span> <span class="time">12 Min Ago</span>
+                  </span>
+                </a> <a href="#" class="dropdown-item"> <span class="dropdown-item-avatar text-white">
+                    <img alt="image" src="/adminassets/img/users/user-4.png" class="rounded-circle">
+                  </span> <span class="dropdown-item-desc"> <span class="message-user">Lina
+                      Smith</span> <span class="time messege-text">hii John, I have upload
+                      doc
+                      related to task.</span> <span class="time">30
+                      Min Ago</span>
+                  </span>
+                </a> <a href="#" class="dropdown-item"> <span class="dropdown-item-avatar text-white">
+                    <img alt="image" src="/adminassets/img/users/user-3.png" class="rounded-circle">
+                  </span> <span class="dropdown-item-desc"> <span class="message-user">Jalpa
+                      Joshi</span> <span class="time messege-text">Please do as specify.
+                      Let me
+                      know if you have any query.</span> <span class="time">1
+                      Days Ago</span>
+                  </span>
+                </a> <a href="#" class="dropdown-item"> <span class="dropdown-item-avatar text-white">
+                    <img alt="image" src="/adminassets/img/users/user-2.png" class="rounded-circle">
+                  </span> <span class="dropdown-item-desc"> <span class="message-user">Sarah
+                      Smith</span> <span class="time messege-text">Client Requirements</span>
+                    <span class="time">2 Days Ago</span>
+                  </span>
+                </a>
+              </div>
+              <div class="dropdown-footer text-center">
+                <a href="#">View All <i class="fas fa-chevron-right"></i></a>
+              </div>
+            </div>
+          </li>
+          <li class="dropdown dropdown-list-toggle"><a href="#" data-toggle="dropdown"
+              class="nav-link notification-toggle nav-link-lg"><i data-feather="bell" class="bell"></i>
+            </a>
+            <div class="dropdown-menu dropdown-list dropdown-menu-right pullDown">
+              <div class="dropdown-header">
+                Notifications
+                <div class="float-right">
+                  <a href="#">Mark All As Read</a>
+                </div>
+              </div>
+              <div class="dropdown-list-content dropdown-list-icons">
+                <a href="#" class="dropdown-item dropdown-item-unread"> <span
+                    class="dropdown-item-icon bg-primary text-white"> <i class="fas
+                                                fa-code"></i>
+                  </span> <span class="dropdown-item-desc"> Template update is
+                    available now! <span class="time">2 Min
+                      Ago</span>
+                  </span>
+                </a> <a href="#" class="dropdown-item"> <span class="dropdown-item-icon bg-info text-white"> <i class="far
+                                                fa-user"></i>
+                  </span> <span class="dropdown-item-desc"> <b>You</b> and <b>Dedik
+                      Sugiharto</b> are now friends <span class="time">10 Hours
+                      Ago</span>
+                  </span>
+                </a> <a href="#" class="dropdown-item"> <span class="dropdown-item-icon bg-success text-white"> <i
+                      class="fas
+                                                fa-check"></i>
+                  </span> <span class="dropdown-item-desc"> <b>Kusnaedi</b> has
+                    moved task <b>Fix bug header</b> to <b>Done</b> <span class="time">12
+                      Hours
+                      Ago</span>
+                  </span>
+                </a> <a href="#" class="dropdown-item"> <span class="dropdown-item-icon bg-danger text-white"> <i
+                      class="fas fa-exclamation-triangle"></i>
+                  </span> <span class="dropdown-item-desc"> Low disk space. Let's
+                    clean it! <span class="time">17 Hours Ago</span>
+                  </span>
+                </a> <a href="#" class="dropdown-item"> <span class="dropdown-item-icon bg-info text-white"> <i class="fas
+                                                fa-bell"></i>
+                  </span> <span class="dropdown-item-desc"> Welcome to Otika
+                    template! <span class="time">Yesterday</span>
+                  </span>
+                </a>
+              </div>
+              <div class="dropdown-footer text-center">
+                <a href="#">View All <i class="fas fa-chevron-right"></i></a>
+              </div>
+            </div>
+          </li>
+          <li class="dropdown"><a href="#" data-toggle="dropdown"
+              class="nav-link dropdown-toggle nav-link-lg nav-link-user"> <img alt="image" src="/adminassets/img/user.png"
+                class="user-img-radious-style"> <span class="d-sm-none d-lg-inline-block"></span></a>
+            <div class="dropdown-menu dropdown-menu-right pullDown">
+              <div class="dropdown-title">Hello Sarah Smith</div>
+              <a href="profile.html" class="dropdown-item has-icon"> <i class="far
+                                        fa-user"></i> Profile
+              </a> <a href="timeline.html" class="dropdown-item has-icon"> <i class="fas fa-bolt"></i>
+                Activities
+              </a> <a href="#" class="dropdown-item has-icon"> <i class="fas fa-cog"></i>
+                Settings
+              </a>
+              <div class="dropdown-divider"></div>
+              <a href="auth-login.html" class="dropdown-item has-icon text-danger"> <i class="fas fa-sign-out-alt"></i>
+                Logout
+              </a>
+            </div>
+          </li>
+        </ul>
+      </nav>
+  
+      <div class="container-md" style="width: 45%; height: 50%; position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%);">
+        <h2 class="mb-4">Order Details</h2>
+    
+        <!-- Loop through each product in the order -->
+        <div class="product-details">
+            <% productOrder.forEach(order => { %>
+                <% order.product.forEach(item => { %>
+                    <div class="product-item">
+                        <div class="product-col">
+                            <img src="/category_img/<%= item.productId.image[0] %>" alt="Product Image" style="max-width: 100px; max-height: 100px;">
+                        </div>
+                        <div class="product-col">
+                            <h5><%= item.productId.name %></h5>
+                            <p>Quantity: <%= item.quantity %></p>
+                            <p>Price: $<%= item.productId.price %></p>
+                        </div>
+                       
+                    </div>
+               
+    
+            <!-- Dropdown for status selection -->
+            <div class="status-dropdown">
+              <div class="col-md-6">
+                  <label for="status">Select Status:</label>
+                  <select class="form-control" id="status" name="status">
+                      <option value="pending" <% if(order.cancelorder === 'pending') { %>selected<% } %>>Pending</option>
+                      <option value="shipped" <% if(order.cancelorder === 'shipped') { %>selected<% } %>>Shipped</option>
+                      <option value="processing" <% if(order.cancelorder === 'processing') { %>selected<% } %>>Processing</option>
+                      <option value="delivered" <% if(order.cancelorder === 'delivered') { %>selected<% } %>>Delivered</option>
+                      <option value="canceled" <% if(order.cancelorder === 'canceled') { %>selected<% } %>>Canceled</option>
+                      <option value="returned" <% if(order.cancelorder === 'returned') { %>selected<% } %>>Returned</option>
+                      <option value="failed" <% if(order.cancelorder === 'failed') { %>selected<% } %>>Failed</option>
+                  </select>
+              </div>
+          </div>
+          
+                
+
+            <!-- Submit button -->
+            <div class="submit-button" style="justify-content: space-between;">
+                <div class="col-md-6">
+                  <button class="btn btn-primary" onclick="updateStatus('<%= item.productId._id %>', '<%=  order._id %>')" type="button">Submit</button>
+                </div>
+            </div>
+            
+            <% }) %>
+            <% }) %>
+        </div>
+    </div>
+    
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+    <script src="/javascripts/otp.js"></script>
+      <script src="/adminassets/js/app.min.js"></script>
+      <!-- JS Libraies -->
+      <script src="/adminassets/bundles/apexcharts/apexcharts.min.js"></script>
+      <!-- Page Specific JS File -->
+      <script src="/adminassets/js/page/index.js"></script>
+      <!-- Template JS File -->
+      <script src="/adminassets/js/scripts.js"></script>
+      <!-- Custom JS File -->
+      <script src="/adminassets/js/custom.js"></script>
+     
+
+
+
+</body>

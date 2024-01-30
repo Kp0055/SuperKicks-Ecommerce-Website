@@ -1,0 +1,406 @@
+
+<%- include('./partials/userheader') %>
+
+<!-- Plugins CSS File -->
+<!-- <link rel="stylesheet" href="/userassets/css/bootstrap.min.css">/ -->
+<!-- Main CSS File -->
+<link rel="stylesheet" href="/userassets/css/style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-ezQBOl89l7KsoY2TPrhyVzOzIw4Nf/i4f9qyG2iQZshcvtKT8T1VPZz0IK67W1L4" crossorigin="anonymous">
+
+
+<style> 
+body {
+  background-color: #efefef;
+}
+
+.profile-pic {
+    width: 200px;
+    max-height: 200px;
+    display: inline-block;
+}
+
+.file-upload {
+    display: none;
+}
+.circle {
+    border-radius: 100% !important;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+    
+img {
+    max-width: 100%;
+    height: auto;
+}
+.p-image {
+  position: absolute;
+  top: 167px;
+  right: 30px;
+  color: #666666;
+  transition: all .3s cubic-bezier(.175, .885, .32, 1.275);
+}
+.p-image:hover {
+  transition: all .3s cubic-bezier(.175, .885, .32, 1.275);
+}
+.upload-button {
+  font-size: 1.2em;
+}
+
+.upload-button:hover {
+  transition: all .3s cubic-bezier(.175, .885, .32, 1.275);
+  color: #999;
+}
+
+</style>
+
+<body>
+    <%- include('./partials/navbar') %>
+    <div class="page-wrapper">
+        <header class="header">
+        <!-- End .header-top -->
+<!-- End .header-middle -->
+        </header><!-- End .header -->
+
+        <main class="main">
+        	<div class="page-header text-center" style="background-image: url('/userassets/images/page-header-bg.jpg')">
+        		<div class="container">
+        			<h1 class="page-title">My Account<span>Shop</span></h1>
+        		</div><!-- End .container -->
+        	</div><!-- End .page-header -->
+            <nav aria-label="breadcrumb" class="breadcrumb-nav mb-3">
+                <div class="container">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/">Home</a></li>
+                        <li class="breadcrumb-item"><a href="#">Shop</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">My Account</li>
+                    </ol>
+                </div><!-- End .container -->
+            </nav><!-- End .breadcrumb-nav -->
+
+            <div class="page-content">
+            	<div class="dashboard">
+	                <div class="container">
+	                	<div class="row">
+	                		<aside class="col-md-4 col-lg-3">
+	                			<ul class="nav nav-dashboard flex-column mb-3 mb-md-0" role="tablist">
+								    <li class="nav-item">
+								        <a class="nav-link active" id="tab-dashboard-link" data-toggle="tab" href="#tab-dashboard" role="tab" aria-controls="tab-dashboard" aria-selected="true">Profile</a>
+								    </li>
+								    <li class="nav-item">
+								        <a class="nav-link" id="tab-orders-link" data-toggle="tab" href="#tab-orders" role="tab" aria-controls="tab-orders" aria-selected="false">Profile Edit </a>
+								    </li>
+								    <li class="nav-item">
+								        <a class="nav-link" id="tab-downloads-link" data-toggle="tab" href="#tab-downloads" role="tab" aria-controls="tab-downloads" aria-selected="false">orders</a>
+								    </li>
+								    <li class="nav-item">
+								        <a class="nav-link" id="tab-address-link" data-toggle="tab" href="#tab-address" role="tab" aria-controls="tab-address" aria-selected="false">Adresses</a>
+								    </li>
+								    <li class="nav-item">
+								        <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false"> ADD ADDRESS </a>
+								    </li>
+									
+								    <li class="nav-item">
+								        <a class="nav-link" href="/logout">Log Out</a>
+								    </li>
+								</ul>
+	                		</aside><!-- End .col-lg-3 -->
+
+								<div class="col-md-6 col-lg-9 mx-auto"">	
+									<div class="tab-content">
+										<div class="tab-pane fade show active" id="tab-dashboard" role="tabpanel" aria-labelledby="tab-dashboard-link">
+											<section style="background-color: #eee;">
+												<div class="container py-4">
+											
+											
+													<div class="row">
+														<div class="col-lg-4">
+														  <div class="card mb-4">
+															<div class="card-body text-center">
+																<div class="row">
+																	<div class="small-12 medium-2 large-2 columns">
+																	  <div class="circle">
+																		<img class="profile-pic" src="https://t3.ftcdn.net/jpg/03/46/83/96/360_F_346839683_6nAPzbhpSkIpb8pmAwufkC7c5eD7wYws.jpg">
+																 
+																	  </div>
+																	  <div class="p-image">
+																		<i class="fas fa-camera upload-button"></i>
+																		 <input class="file-upload" type="file" accept="image/*"/>
+																	  </div>
+																   </div>
+																 </div>
+															  <p class="text-muted mb-1">Hello,</p>
+															  <h4 class="my-3"><%= profileData.firstname %> <%= profileData.lastname %> </h4>
+															  <br>
+															  <!-- <div class="d-flex justify-content-center mb-2">
+																<button type="button" class="btn btn-primary">Follow</button>
+																<button type="button" class="btn btn-outline-primary ms-1">Message</button>
+															  </div> -->
+															</div>
+														  </div>
+														</div>
+													  
+														<div class="col-lg-4">
+														  <div class="card mb-4">
+															<div class="card-body">
+															  <div class="row">
+																<div class="col-sm-4">
+																  <p class="mb-0"><b>Full Name </b></p>
+																</div>
+																<div class="col-sm-9">
+																  <p class="text-muted mb-0"><%= profileData.firstname %> <%= profileData.lastname %></p>
+																</div>
+															  </div>
+															  <hr>
+															  <div class="row">
+																<div class="col-sm-4">
+																  <p class="mb-0"><b>Email </b></p>
+																</div>
+																<div class="col-sm-9">
+																  <p class="text-muted mb-0"><%= profileData.email %></p>
+																</div>
+															  </div>
+															  <hr>
+															  <div class="row">
+																<div class="col-sm-4">
+																  <p class="mb-0"><b>Phone Number</b></p>
+																</div>
+																<div class="col-sm-9">
+																  <p class="text-muted mb-0"><%= profileData.phonenumber %></p>
+																</div>
+															  </div>
+															</div>
+														  </div>
+														</div>
+													  </div>
+													  
+												</div>
+											</section>
+										</div><!-- .End .tab-pane -->
+
+										<div class="tab-pane fade" id="tab-orders" role="tabpanel" aria-labelledby="tab-account-link">
+											<form action="/profile_edit" method="post">
+												<div class="row">
+													<div class="col-sm-6">
+														<label> First Name *</label>
+														<input type="text" name="fname" value="<%= profileData.firstname %>" class="form-control" required>
+													</div><!-- End .col-sm-6 -->
+										
+													<div class="col-sm-6">
+														<label> Last Name *</label>
+														<input type="text" name="lname" value="<%= profileData.lastname %>" class="form-control" required>
+													</div><!-- End .col-sm-6 -->
+												</div><!-- End .row -->
+										
+												<div class="row">
+													<div class="col-sm-6">
+														<label> Email *</label>
+														<input type="text" name="pemail" value="<%= profileData.email %>" class="form-control" required>
+													</div><!-- End .col-sm-6 -->
+										
+													<div class="col-sm-6">
+														<label> Phone Number *</label>
+														<input type="text" name="phonenumber" value="<%= profileData.phonenumber %>" class="form-control" required>
+													</div><!-- End .col-sm-6 -->
+												</div><!-- End .row -->
+										
+												<a href="/ForgotPassword" class="btn btn-danger" role="button">
+													<span> Change Password </span>
+													<i class="icon-long-arrow-right"></i>
+												</a>
+										
+												<br>
+												<br>
+										
+												<button type="submit" class="btn btn-outline-primary-2">
+													<span> SAVE </span>
+													<i class="icon-long-arrow-right"></i>
+												</button>
+											</form>
+										</div>
+										<div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
+											<h4><b>Orders</b></h4>
+											<table class="table">
+												<thead>
+													<tr>
+														<th scope="col"><b>Product Image</b></th>
+														<th scope="col"><b>Product Name</b></th>
+														<th scope="col"><b>Price</b></th>
+														<th scope="col"><b>Status</b></th>
+														<th scope="col"></th>
+													</tr>
+												</thead>
+												<tbody>
+													<% if (Myorders && Myorders.length > 0) { %>
+														<% Myorders.forEach((order) => { %>
+														  <% order.product.forEach((product) => { %>
+															<tr>
+															  <td>
+																<img src="/category_img/<%= product.productId.image[0] %>" alt="Product Image" style="max-width: 100px; max-height: 100px;">
+															  </td>
+															  <td><%= product.productId.name %></td>
+															  <td><%= product.productId.price %></td>
+															  <td><%= product.cancelOrder %></td>
+															  <td>
+																<% if (product.cancelOrder === 'canceled') { %>
+																  <button type="button" class="btn btn-outline-secondary" disabled>Cancelled</button>
+																<% } else { %>
+																  <button type="button" class="btn btn-outline-danger" onclick="cancelOrder('<%= order._id %>', '<%= product.productId._id %>')">Cancel</button>
+																<% } %>
+															  </td>
+															</tr>
+														  <% }) %>
+														<% }) %>
+													  <% } else { %>
+														<tr>
+														  <td colspan="5">No orders available.</td>
+														</tr>
+													  <% } %>
+													</tbody>
+											</table>
+										</div>
+										
+										
+										<div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">
+											<h4>Manage Address</h4>
+											<div class="row">
+											  <div class="col-lg-6">
+												<div class="card card-dashboard">
+												  <div class="card-body">
+													<h4>Addresses</h4>
+													<% profileAddresses.forEach(function(profileAddress) { %>
+													  <div class="card address-container" style="background-color: #f8f9fa; border: 1px solid #6f6f6fcd;">
+														<div class="card-body">
+														  <% profileAddress.address.forEach(function(data) { %>
+															<div class="address-box">
+															  <ul>
+																<li><b>Name: </b><%= data.name %></li>
+																<li><b>Phone Number: </b><%= data.phoneNumber %></li>
+																<li><b>Pincode: </b><%= data.pincode %></li>
+																<li><b>Locality: </b><%= data.locality %></li>
+																<li><b>Address: </b><%= data.address %></li>
+																<li><b>City: </b><%= data.city %></li>
+																<li><b>State: </b><%= data.state %></li>
+																<li><b>Landmark: </b><%= data.landmark %></li>
+																<li><b>AlternativePhoneNumber: </b><%= data.alternativePhoneNumber %></li>
+															  </ul>
+															</div>
+															<hr style="border-color: #000000;" />
+														  <% }); %>
+														</div>
+													  </div>
+													<% }); %>
+												  </div><!-- End .card-body -->
+												</div><!-- End .card-dashboard -->
+											  </div><!-- End .col-lg-6 -->
+											</div><!-- End .row -->
+										  </div>
+										  
+										  <div class="tab-pane fade" id="tab-account" role="tabpanel" aria-labelledby="tab-account-link">
+											<form action="/MyAccount" method="post" return onsubmit="return addressvalidateForm()">
+												<div class="row">
+													<div class="col-sm-6">
+														<label> Name *</label>
+														<input type="text" name="name"  id="name" class="form-control" required>
+														<span id="nameError" style="color: red;"></span>
+
+													</div><!-- End .col-sm-6 -->
+										
+													<div class="col-sm-6">
+														<label> Phone Number *</label>
+														<input type="text" name="phone" id="phone" class="form-control" required>
+														<span id="phoneError" style="color: red;"></span>
+													</div><!-- End .col-sm-6 -->
+												</div><!-- End .row -->
+										
+												<div class="row">
+													<div class="col-sm-6">
+														<label> Pincode *</label>
+														<input type="text" name="pin"  id="pin"  class="form-control" required>
+														<span id="pinError" style="color: red;"></span>
+														
+													</div><!-- End .col-sm-6 -->
+										
+													<div class="col-sm-6">
+														<label> Locality *</label>
+														<input type="text" name="locality"  id="locality" class="form-control" required>
+														<span id="localityError" style="color: red;"></span>
+													</div><!-- End .col-sm-6 -->
+												</div><!-- End .row -->
+										
+												<label> Address *</label>
+												<input type="text" name="address" id="address" class="form-control" required>
+												<span id="addressError" style="color: red;"></span>
+										
+												<div class="row">
+													<div class="col-sm-6">
+														<label> City  *</label>
+														<input type="text" name="city" id="city" class="form-control" required>
+														<span id="cityError" style="color: red;"></span>
+													</div><!-- End .col-sm-6 -->
+										
+													<div class="col-sm-6">
+														<label> State *</label>
+														<input type="text" name="state" id="state" class="form-control" required>
+														<span id="stateError" style="color: red;"></span>
+													</div><!-- End .col-sm-6 -->
+												</div><!-- End .row -->
+										
+												<div class="row">
+													<div class="col-sm-6">
+														<label> Landmark *</label>
+														<input type="text" name="landmark" id="landmark" class="form-control" required>
+														<span id="landmarkError" style="color: red;"></span>
+													</div><!-- End .col-sm-6 -->
+										
+													<div class="col-sm-6">
+														<label> Alternative phone Number *</label>
+														<input type="text" name="altphone" id="alternative" class="form-control" required>
+														<span id="alternativeError" style="color: red;"></span>
+													</div><!-- End .col-sm-6 -->
+												</div><!-- End .row -->
+										
+												<button type="submit" class="btn btn-outline-primary-2">
+													<span> SAVE </span>
+													<i class="icon-long-arrow-right"></i>
+												</button>
+											</form>
+										</div>
+										
+									</div>
+								</div><!-- End .col-lg-9 -->
+	                	</div><!-- End .row -->
+	                </div><!-- End .container -->
+                </div><!-- End .dashboard -->
+            </div><!-- End .page-content -->
+        </main><!-- End .main -->
+        <%- include('./partials/footer') %> 
+
+
+    </div><!-- End .page-wrapper -->
+    <button id="scroll-top" title="Back to Top"><i class="icon-arrow-up"></i></button>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu-overlay"></div><!-- End .mobil-menu-overlay -->
+
+ <!-- End .mobile-menu-container -->
+
+    <!-- Sign in / Register Modal -->
+
+
+    <!-- Plugins JS File -->
+	
+	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+	<script src="/javascripts/otp.js"></script>
+	<script src="/javascripts/validation.js"></script>
+    <script src="/userassets/js/jquery.min.js"></script>
+    <script src="/userassets/js/bootstrap.bundle.min.js"></script>
+    <script src="/userassets/js/jquery.hoverIntent.min.js"></script>
+    <script src="/userassets/js/jquery.waypoints.min.js"></script>
+    <script src="/userassets/js/superfish.min.js"></script>
+    <script src="/userassets/js/owl.carousel.min.js"></script>
+    <!-- Main JS File -->
+    <script src="/userassets/js/main.js"></script>
+</body>
+
+<!-- molla/dashboard.html  22 Nov 2019 10:03:13 GMT -->
+</html>

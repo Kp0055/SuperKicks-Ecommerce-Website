@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <title>Edit Form</title>
+</head>
+<body>
+
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <h2 class="text-center">Edit Form</h2>
+       
+        <form action="/Edit_address/<%= editaddress._id %>" method="post"  onsubmit="return validateForm();" >
+
+      
+          
+          <div class="form-group">
+            <label for="name">Name:</label>
+            <input type="text"  value="<%= editaddress.name %>"  class="form-control" name="name"  id="name" placeholder="Enter name">
+            <span id="nameError" style="color: red;"></span>
+          </div>
+          <div class="form-group">
+            <label for="phone">Phone:</label>
+            <input type="tel" value="<%= editaddress.phoneNumber %>" class="form-control" name="phone" id="phone" placeholder="Enter phone">
+            <span id="phoneError" style="color: red;"></span>
+          </div>
+          <div class="form-group">
+            <label for="pin">Pin:</label>
+            <input type="tel" value="<%= editaddress.pincode %>" class="form-control" name="pin" id="pin" placeholder="Enter pin">
+            <span id="pinError" style="color: red;"></span>
+          </div>
+          <div class="form-row">
+            <div class="form-group col-md-6">
+              <label for="city">City:</label>
+              <input type="text" value="<%= editaddress.city %>" class="form-control" name="city" id="city" placeholder="Enter city">
+              <span id="cityError" style="color: red;"></span>
+            </div>
+            <div class="form-group col-md-6">
+              <label for="state">State:</label>
+              <input type="text" value="<%= editaddress.state %>" class="form-control" name="state" id="state" placeholder="Enter state">
+              <span id="stateError" style="color: red;"></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="locality">Locality:</label>
+            <input type="text" value="<%= editaddress.locality %>" class="form-control" name="locality" id="locality" placeholder="Enter locality">
+            <span id="localityError" style="color: red;"></span>
+          </div>
+          <div class="form-group">
+            <label for="address">Address:</label>
+            <input type="text" value="<%= editaddress.address %>" class="form-control" name="address" id="address" placeholder="Enter address">
+            <span id="addressError" style="color: red;"></span>
+          </div>
+          <div class="form-group">
+            <label for="landmark">Landmark:</label>
+            <input type="text" value="<%= editaddress.landmark %>" class="form-control" name="landmark" id="landmark" placeholder="Enter landmark">
+            <span id="landmarkError" style="color: red;"></span>
+          </div>
+          <div class="form-group">
+            <label for="altphone">Alternate Phone:</label>
+            <input type="tel" value="<%= editaddress.alternativePhoneNumber %>" class="form-control" name="altphone" id="alternative" placeholder="Enter alternate phone">
+            <span id="alternativeError" style="color: red;"></span>
+          </div> 
+          <button type="submit" class="btn btn-primary btn-block">Submit</button> 
+
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bootstrap JS and Popper.js scripts (required for Bootstrap features) -->
+  <script src="/javascripts/validation.js"></script>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
