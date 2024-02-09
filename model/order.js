@@ -103,7 +103,7 @@ const orderSchema = mongoose.Schema({
   },
   paymentStatus: {
       type: String,
-      default: 'sucess',
+      default: 'pending',
   },
 }, {
   timestamps: true,

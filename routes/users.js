@@ -1,98 +1,94 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-const use =require('../controller/usercontroller')
-const verifyToken = require('../middileware/authentication')
-const blocked = require('../middileware/block_middleware')
-const productController = require('../controller/productcontroller')
-
+const use = require("../controller/usercontroller");
+const productController = require("../controller/productcontroller");
+const { verifyJwt } = require("../controller/JWT");
 
 /* GET users listing. */
-router.get('/',verifyToken,blocked,use.main)
+router.get("/", use.main);
 
-router.get('/login',use.getLogin)
+router.get("/login", verifyJwt, use.getLogin);
 
-router.get('/signup',use.getRegister)
+router.get("/signup", verifyJwt, use.getRegister);
 
-router.get('/otpverification',use.userOtp)
+router.get("/otpverification", verifyJwt, use.userOtp);
 
-router.get('/otpsucess',use.getOtpSucess)
+router.get("/otpsucess", verifyJwt, use.getOtpSucess);
 
-router.get('/ForgotPassword',use.fpassword)
+router.get("/ForgotPassword", verifyJwt, use.fpassword);
 
-router.get('/products_list',verifyToken,blocked,productController.productList)
+router.get("/products_list",productController.productList);
 
-router.get('/product/:id',verifyToken,blocked,productController.productDetails)
+router.get("/product/:id", verifyJwt, productController.productDetails);
 
-router.get('/reset_password/:id',use.reset)
+router.get("/reset_password/:id", use.reset);
 
-router.get('/product_scandel',verifyToken,blocked,use.productScandels)
+router.get("/product_scandel", verifyJwt, use.productScandels);
 
-router.get('/cart',verifyToken,blocked,use.productCart)
+router.get("/cart", verifyJwt, use.productCart);
 
-router.get('/MyAccount',verifyToken,blocked,use.account);
+router.get("/MyAccount", verifyJwt, use.account);
 
-router.get('/Edit_address/:addressid',verifyToken,blocked,use.editsAddress)
+router.get("/Edit_address/:addressid", verifyJwt, use.editsAddress);
 
-router.get('/logout',verifyToken,blocked,use.postLogout)
+router.get("/logout", verifyJwt, use.postLogout);
 
-router.get ('/checkout',verifyToken,blocked,use.checkout)
+router.get("/checkout", verifyJwt, use.checkout);
 
-router.get ('/custom-404-page',verifyToken,blocked,use.error)
+router.get("/custom-404-page", verifyJwt, use.error);
 
-router.get ('/orderplaced/:oid',verifyToken,blocked,use.orderSucess)
+router.get("/orderplaced/:oid", verifyJwt, use.orderSucess);
 
+//post
 
+router.post("/login", use.postLogin);
 
+router.post("/signup", use.postRegister);
 
+router.post("/otpverification", use.userPostOtp);
 
+router.post("/ForgotPassword", use.forgetPassword);
 
+router.post("/reset_password/:id", use.postReset);
 
+router.post("/MyAccount", verifyJwt, use.myAccount);
 
+router.post("/profile_edit", verifyJwt, use.editProfile);
 
-//post 
+router.post("/product/:prodId", verifyJwt, use.cartProduct);
 
-router.post('/login',use.postLogin)
+router.post("/Delete_product/:deleteid", verifyJwt, use.productDel);
 
-router.post('/signup',use.postRegister)
+router.post("/update-cart-quantity", verifyJwt, use.cartQty);
 
-router.post('/otpverification',use.userPostOtp)
+router.post("/checkout", verifyJwt, use.postCheckout);
 
-router.post('/ForgotPassword',use.forgetPassword)
+router.post('/checkoutAddress',verifyJwt,use.checkoutAddress)
 
-router.post('/reset_password/:id',use.postReset)
+router.post(
+  "/Edit_address/:addressid",
+  verifyJwt,
+  use.postEditAddress
+);
 
-router.post ('/MyAccount',verifyToken,blocked,use.myAccount)
+router.post(
+  "/delete_address/:addressDelete",
+  verifyJwt,
+  use.addressDelete
+);
 
-router.post ('/profile_edit',verifyToken,blocked,use.editProfile)
+router.post(
+  "/cancelOrder/:Order/:Product",
+  verifyJwt,
+  use.orderCancel
+);
 
-router.post ('/product/:prodId',verifyToken,blocked,use.cartProduct)
+router.post(
+  "/cartSelect/:selectedProduct_Id",
+  verifyJwt,
+  use.selectProduct
+);
 
-router.post ('/Delete_product/:deleteid',verifyToken,blocked,use.productDel)
-
-router.post ('/update-cart-quantity',verifyToken,blocked,use.cartQty)
-
-router.post ('/checkout',verifyToken,blocked,use.postCheckout)
-
-router.post ('/Edit_address/:addressid',verifyToken,blocked,use.postEditAddress)
-
-router.post ('/delete_address/:addressDelete',verifyToken,blocked,use.addressDelete)
-
-router.post ('/cancelOrder/:Order/:Product',verifyToken,blocked,use.orderCancel)
-
-router.post('/cartSelect/:selectedProduct_Id',verifyToken,blocked,use.selectProduct)
-
-router.post ('/verify_Payment',verifyToken,blocked,use.verify)  
-
-
-
-
-
-
-
-
-
-
-
-
+router.post("/verify_Payment", verifyJwt, use.verify);
 
 module.exports = router;

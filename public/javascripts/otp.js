@@ -1,74 +1,4 @@
-const { use } = require("../../routes/admin");
-require("dotenv").config();
 
-const inputs = document.querySelectorAll(".otp-field > input");
-const button = document.querySelector(".btn");
-
-window.addEventListener("load", () => inputs[0].focus());
-button.setAttribute("disabled", "disabled");
-
-inputs[0].addEventListener("paste", function (event) {
-event.preventDefault();
-
-const pastedValue = (event.clipboardData || window.clipboardData).getData(
-"text"
-);
-const otpLength = inputs.length;
-
-for (let i = 0; i < otpLength; i++) {
-if (i < pastedValue.length) {
-inputs[i].value = pastedValue[i];
-inputs[i].removeAttribute("disabled");
-inputs[i].focus;
-} else {
-inputs[i].value = ""; // Clear any remaining inputs
-inputs[i].focus;
-}
-}
-});
-
-inputs.forEach((input, index1) => {
-input.addEventListener("keyup", (e) => {
-const currentInput = input;
-const nextInput = input.nextElementSibling;
-const prevInput = input.previousElementSibling;
-
-if (currentInput.value.length > 1) {
-currentInput.value = "";
-return;
-}
-
-if (
-nextInput &&
-nextInput.hasAttribute("disabled") &&
-currentInput.value !== ""
-) {
-nextInput.removeAttribute("disabled");
-nextInput.focus();
-}
-
-if (e.key === "Backspace") {
-inputs.forEach((input, index2) => {
-if (index1 <= index2 && prevInput) {
-  input.setAttribute("disabled", true);
-  input.value = "";
-  prevInput.focus();
-}
-});
-}
-
-button.classList.remove("active");
-button.setAttribute("disabled", "disabled");
-
-const inputsNo = inputs.length;
-if (!inputs[inputsNo - 1].disabled && inputs[inputsNo - 1].value !== "") {
-button.classList.add("active");
-button.removeAttribute("disabled");
-
-return;
-}
-});
-});
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -438,8 +368,7 @@ async function deleteproduct(deleteid) {
 function updateQuantity(productId) {
   const quantityInput = document.querySelector("#quantityInput"+productId);
   const newQuantity = quantityInput.value;
-// Make sure that the user entered a valid number for quantityconso
-console.log(newQuantity)
+
   // Perform a fetch to update the quantity in the database
   fetch("/update-cart-quantity", {
     method: "POST",
@@ -447,15 +376,23 @@ console.log(newQuantity)
     body: JSON.stringify({ productId, quantity: newQuantity })
   })
   .then(response => response.json())
-  .then(data  => {
-    window.location.reload();
-    // Handle response from the backend, if needed
-    console.log("Quantity updated successfully");
-  })
+  .then(data => {
+    if (data.success) {
+        window.location.reload();
+        console.log("Quantity updated successfully");
+    } else if (data.message) {
+        const errorMessageDiv = document.getElementById('error-message');
+        errorMessageDiv.innerHTML = data.message;
+    } else {
+       
+        window.location.reload(); 
+    }
+})
   .catch(error => {
     console.error("Error updating cart quantity:", error);
   });
 }
+
 
 //checkout fetch 
 
@@ -563,9 +500,9 @@ async function cancelOrder(Order, Product) {
 //admin cancel
 
 
-  function updateStatus(OrderId, ProductId) {
-    // Display SweetAlert confirmation
-    Swal.fire({
+function updateStatus(OrderId, ProductId) {
+  // Display SweetAlert confirmation
+  Swal.fire({
       title: 'Are you sure?',
       text: 'Do you really want to update the status?',
       icon: 'warning',
@@ -573,94 +510,66 @@ async function cancelOrder(Order, Product) {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Yes, update it!'
-    }).then((result) => {
+  }).then((result) => {
       if (result.isConfirmed) {
-        // User confirmed, proceed with status update
-        var selectedStatus = document.getElementById('status').value;
+          
+          var selectedStatus = document.getElementById('status').value;
 
-        // Prepare the data to be sent in the request body
-     
-     
-        
-
-        // Make a POST request to your server endpoint
-        fetch(`/admin/update_status/${OrderId}/${ProductId}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({status:selectedStatus}),
-        })
-          .then(response => response.json())
-          .then(data => {
-            console.log('Success:', data);
-            // Handle success, if needed
+          
+          fetch(`/admin/update_status/${OrderId}/${ProductId}`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ status: selectedStatus }),
           })
-          .catch((error) => {
-            console.error('Error:', error);
-            // Handle errors, if needed
-          });
+              .then(response => response.json())
+              .then(data => {
+                  console.log('Success:', data);
+                
+                  Swal.fire({
+                      icon: 'success',
+                      title: 'Status Updated Successfully',
+                      showConfirmButton: false,
+                      timer: 1500
+                  });
+                 
+                  window.location.href = '/admin/OrderList';
+              })
+              .catch((error) => {
+                  console.error('Error:', error);
+                  // If there's an error during status update, show a failure message
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Status Update Failed',
+                      text: 'An error occurred while updating the status. Please try again later.',
+                  });
+                  // Handle errors, if needed
+              });
       }
-    });
-  }
+  });
+}
 
-  function checkbox(selectedProduct_Id){
 
-    alert(selectedProduct_Id)
-
+  function checkbox(selectedProduct_Id, isChecked) {
     fetch(`/cartSelect/${selectedProduct_Id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isChecked: isChecked })
     })
-      .then(response => response.json())
-      .then(data => {
+    .then(response => response.json())
+    .then(data => {
         console.log('Success:', data);
         // Handle success, if needed
-      })
-      .catch((error) => {
+    })
+    .catch((error) => {
         console.error('Error:', error);
         // Handle errors, if needed
-      });
-    }
+    });
+}
 
-
-    function status(orderId, currentStatus) {
-      
-      alert(currentStatus)
-      var newStatus = document.querySelector('[name="orderStatus"]').value;
-
-      alert(newStatus)
-  
-      fetch('/admin/status', {
-          method: 'POST',
-          headers: {
-              'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-              orderId: orderId,
-              currentStatus: currentStatus,
-              newStatus: newStatus,
-          }),
-      })
-      .then(response => {
-          if (!response.ok) {
-              throw new Error('Network response was not ok');
-          }
-          return response.json();
-      })
-      .then(data => {
-          window.location.reload()
-          console.log(data);
-      })
-      .catch(error => {
-          // Handle error, if needed
-          console.error('There was a problem with the fetch operation:', error);
-      });
-  }
-
-  // payment 
 
 
 

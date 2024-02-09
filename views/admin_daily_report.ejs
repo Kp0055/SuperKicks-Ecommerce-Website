@@ -1,6 +1,11 @@
 <%- include('./partials/header') %>
 <%- include('./partials/adminsidebar') %>
 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
 <body>
   <div class="loader"></div>
   <div id="app">
@@ -150,7 +155,7 @@
                 Settings
               </a>
               <div class="dropdown-divider"></div>
-              <a href="auth-login.html" class="dropdown-item has-icon text-danger"> <i class="fas fa-sign-out-alt"></i>
+              <a href="/admin/logout" class="dropdown-item has-icon text-danger"> <i class="fas fa-sign-out-alt"></i>
                 Logout
               </a>
             </div>
@@ -367,24 +372,39 @@
         </aside>
       </div> -->
       <!-- Main Content -->
-      <div class="container mt-5" style="padding-top: 50px; margin-left: 350px;">
-        <div class="row justify-content-end" style="margin-left: -200px;"> <!-- Align to the right -->
-            <div class="col-md-2"> <!-- Adjust the column width -->
-                <form class="form-inline">
-                    <div class="input-group">
-                        <input type="text" class="form-control form-control-sm" placeholder="Search" aria-label="Search" aria-describedby="button-addon2">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-secondary btn-sm" type="button" id="button-addon2">Search</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+      <div class="container mt-5" style="padding-top: 30px;">
+        <div class="d-flex justify-content-between">
+          <div>
+            <button id="generate-pdf-btn" class="btn btn-primary">Generate PDF</button>
+            <button id="excel-generator" class="btn btn-success">Download Excel</button>
+          </div>
+          <div>
+            <input type="text" id="datepicked" name="dates" />
+          </div>
         </div>
-    </div>
-      <div class="main-content" style="padding-top: 15px;">
-        <table class="table table-bordered">
+      </div>
+      <style>
+        .container {
+  margin-left: 280px; /* Adjust margin-left as needed */
+}
 
-         
+.d-flex {
+  display: flex;
+}
+
+.justify-content-between {
+  justify-content: space-between;
+}
+
+/* Optional: Adjust button margin */
+button {
+  margin-right: 5px; /* Adjust margin as needed */
+}
+      </style>
+      
+      <div class="main-content" style="padding-top: 15px;">
+
+        <table class="table table-bordered">
 
           <thead>
             <tr class="table-primary">
@@ -427,22 +447,27 @@
                 <td style="color: red;"><b><%= subtotal %> </b></td> 
             </tr>
         </tbody>
-        
-        
-          
+      
+  
         </table>
 
-          <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-end">
-              <li class="page-item disabled">
-                <a class="page-link">Previous</a>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-end">
+            <li class="page-item">
+              <a class="page-link" href="/admin/daily_Report/?page=1" tabindex="-1">Previous</a>
+            </li>
+            <% for(let i = 1; i <= totalPages; i++) { %>
+              <li class="page-item <%= currentPage == i ? 'active' : '' %>">
+                <a class="page-link" href="/admin/daily_Report/?page=<%= i %>"><%= i %></a>
               </li>
-              <li class="page-item"><a class="page-link" href="#">1</a></li>
-              <li class="page-item">
-                <a class="page-link" href="#">Next</a>
-              </li>
-            </ul>
-          </nav>
+            <% } %>
+            <li class="page-item">
+              <a class="page-link" href="/admin/daily_Report/?page=<%= totalPages %>">Next</a>
+            </li>
+          </ul>
+        </nav>
+  
+
       </div>   
       </div>
       <footer class="main-footer">
@@ -451,7 +476,93 @@
       </footer>
     </div>
   </div>
-  <!-- General JS Scripts -->
+
+
+  <---- pdf ----->
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const generatePdfButton = document.getElementById('generate-pdf-btn');
+        generatePdfButton.addEventListener('click', () => {
+            // Redirect to the backend route for PDF generation
+            window.location.href = '/admin/generate-pdf';
+        });
+    });
+</script>
+
+
+
+
+<script>
+
+  $('input[name="dates"]').daterangepicker();
+
+
+  let startDate, endDate;
+
+
+  $('input[name="dates"]').on('apply.daterangepicker', function(ev, picker) {
+
+    startDate = picker.startDate.toDate();
+      endDate = picker.endDate.toDate();
+      
+
+      console.log('Start Date:', startDate);
+      console.log('End Date:', endDate);
+      
+      sendDataUsingQuery(startDate, endDate, "/admin/daily_Report");
+  });
+
+  function sendDataUsingQuery(startDate, endDate, endpoint) {
+    let queryString = `?start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`;
+    let newURL = endpoint + queryString;
+    window.location.href = newURL;  
+  }
+
+
+</script>
+
+
+<script>
+  $('#excel-generator').click(function() {
+    console.log('Generating Excel...');
+    $.ajax({
+        url: '/admin/excelDownload',
+        method: 'GET',
+        xhrFields: {
+            responseType: 'arraybuffer' 
+        },
+        success: function(response) {
+            console.log('Excel generated successfully.');
+
+          
+            const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+            
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = 'users.xlsx'; 
+
+          
+            document.body.appendChild(link);
+            link.click();
+
+            
+            document.body.removeChild(link);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error generating Excel:', error);
+            
+        }
+    });
+});
+
+  </script>
+  
+
+
+
+ 
   <script src="/javascripts/validation.js"></script>
   <script src="/adminassets/js/app.min.js"></script>
   <!-- JS Libraies -->

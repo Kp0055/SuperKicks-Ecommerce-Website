@@ -174,7 +174,7 @@
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
                         <div class="card-content">
                           <h5 class="font-15">Order </h5>
-                          <h2 class="mb-3 font-18">258</h2>
+                          <h5 style="color: blue;">   <%= orderCount%></h5>
                           <p class="mb-0"><span class="col-green">10%</span> Increase</p>
                         </div>
                       </div>
@@ -196,7 +196,7 @@
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
                         <div class="card-content">
                           <h5 class="font-15"> Customers</h5>
-                          <h2 class="mb-3 font-18">1,287</h2>
+                          <h2 class="mb-3 font-18"><%= userCount %></h2>
                           <p class="mb-0"><span class="col-orange">09%</span> Decrease</p>
                         </div>
                       </div>
@@ -241,7 +241,19 @@
                       <div class="col-lg-6 col-md-6 col-sm-6 col-xs-6 pr-0 pt-3">
                         <div class="card-content">
                           <h5 class="font-15">Revenue</h5>
-                          <h2 class="mb-3 font-18">$48,697</h2>
+                          <%
+                          let subtotal = 0; 
+
+                          latest_Order.forEach((order_Details) => {
+                           
+                            order_Details.product.forEach((product_Details) => {
+                              
+                              subtotal += product_Details.total;
+                            });
+                          });
+                        %>
+                          <h2 class="mb-3 font-18" style="color: rgb(13, 0, 197);">
+                            <%=subtotal%></h2>
                           <p class="mb-0"><span class="col-green">42%</span> Increase</p>
                         </div>
                       </div>
@@ -257,89 +269,115 @@
             </div>
           </div>
           <div class="row">
+            
             <div class="col-12 col-sm-12 col-lg-12">
               <div class="card ">
                 <div class="card-header">
-                  <h4>Revenue chart</h4>
+                  <h4> chart</h4>
                   <div class="card-header-action">
                     <div class="dropdown">
-                      <a href="#" data-toggle="dropdown" class="btn btn-warning dropdown-toggle">Options</a>
+                      <a href="#" data-toggle="dropdown" class="btn btn-warning dropdown-toggle"> Chart Options</a>
                       <div class="dropdown-menu">
-                        <a href="#" class="dropdown-item has-icon"><i class="fas fa-eye"></i> View</a>
-                        <a href="#" class="dropdown-item has-icon"><i class="far fa-edit"></i> Edit</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" class="dropdown-item has-icon text-danger"><i class="far fa-trash-alt"></i>
-                          Delete</a>
+                        <a href="#" class="dropdown-item has-icon">Daily</a>
+                        <a href="#" class="dropdown-item has-icon">Monthly</a>
+                        <a href="#" class="dropdown-item has-icon ">
+                          Yearly</a>
                       </div>
                     </div>
                     <a href="#" class="btn btn-primary">View All</a>
                   </div>
                 </div>
-                <div class="card-body">
-                  <div class="row">
-                    <div class="col-lg-9">
-                      <div id="chart1"></div>
-                      <div class="row mb-0">
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                          <div class="list-inline text-center">
-                            <div class="list-inline-item p-r-30"><i data-feather="arrow-up-circle"
-                                class="col-green"></i>
-                              <h5 class="m-b-0">$675</h5>
-                              <p class="text-muted font-14 m-b-0">Weekly Earnings</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                          <div class="list-inline text-center">
-                            <div class="list-inline-item p-r-30"><i data-feather="arrow-down-circle"
-                                class="col-orange"></i>
-                              <h5 class="m-b-0">$1,587</h5>
-                              <p class="text-muted font-14 m-b-0">Monthly Earnings</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-                          <div class="list-inline text-center">
-                            <div class="list-inline-item p-r-30"><i data-feather="arrow-up-circle"
-                                class="col-green"></i>
-                              <h5 class="mb-0 m-b-0">$45,965</h5>
-                              <p class="text-muted font-14 m-b-0">Yearly Earnings</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-lg-3">
-                      <div class="row mt-5">
-                        <div class="col-7 col-xl-7 mb-3">Total customers</div>
-                        <div class="col-5 col-xl-5 mb-3">
-                          <span class="text-big">8,257</span>
-                          <sup class="col-green">+09%</sup>
-                        </div>
-                        <div class="col-7 col-xl-7 mb-3">Total Income</div>
-                        <div class="col-5 col-xl-5 mb-3">
-                          <span class="text-big">$9,857</span>
-                          <sup class="text-danger">-18%</sup>
-                        </div>
-                        <div class="col-7 col-xl-7 mb-3">Project completed</div>
-                        <div class="col-5 col-xl-5 mb-3">
-                          <span class="text-big">28</span>
-                          <sup class="col-green">+16%</sup>
-                        </div>
-                        <div class="col-7 col-xl-7 mb-3">Total expense</div>
-                        <div class="col-5 col-xl-5 mb-3">
-                          <span class="text-big">$6,287</span>
-                          <sup class="col-green">+09%</sup>
-                        </div>
-                        <div class="col-7 col-xl-7 mb-3">New Customers</div>
-                        <div class="col-5 col-xl-5 mb-3">
-                          <span class="text-big">684</span>
-                          <sup class="col-green">+22%</sup>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+             
+   
+                <div style="width: 80%; margin: 0 auto;">
+                  <canvas id="myChart" width="800" height="400"></canvas>
+              </div>
+
+              <%= console.log(ordersByDay)%>
+              <input type="hidden" value="<%= JSON.stringify(ordersCountPerDayOfWeek) %>" id="chartData">
+
+                
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script>
+             const data = JSON.parse(document.getElementById('chartData').value);
+             const daysOrder = {
+                    'Sunday': 0,
+                    'Monday': 1,
+                    'Tuesday': 2,
+                    'Wednesday': 3,
+                    'Thursday': 4,
+                    'Friday': 5,
+                    'Saturday': 6
+                  };
+
+                  // Sort the data based on the day of the week
+                  data.sort((a, b) => {
+                    return daysOrder[a.day] - daysOrder[b.day];
+                  });
+
+                // Extracting data for the chart
+                const labels = data.map(item => item.day);
+                const counts = data.map(item => item.count);
+
+                // Initial chart configuration
+                const initialData = {
+                    labels: labels,
+                    datasets: [{
+                        label: '# of Orders Placed',
+                        data: counts,
+                        backgroundColor: 'rgba(54, 162, 235, 1)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        barThickness: 50
+                    }]
+                };
+
+                const ctx = document.getElementById('myChart').getContext('2d');
+                const myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: initialData,
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: true,
+                                labels: {
+                                    color: 'rgb(0, 0, 0)',
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Orders Placed by Day',
+                                color: 'rgb(0, 0, 0)',
+                                font: {
+                                    size: 18,
+                                    weight: 'bold'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Function to update chart data
+                function updateChartData(newData) {
+                    myChart.data.datasets[0].data = newData;
+                    myChart.update();
+                }
+
+                // Example: Update chart data with new values
+                // const newData = [15, 25, 8, 10, 5, 7, 12];
+                // updateChartData(newData);
+
+              </script>
+              
+                 
               </div>
             </div>
           </div>
@@ -381,6 +419,9 @@
               </div>
             </div>
           </div> -->
+      
+
+          <%= console.log(subtotal)%>
           <div class="row">
             <div class="col-12">
               <div class="card">
@@ -399,6 +440,10 @@
                 </div>
                 <div class="card-body p-0">
                   <div class="table-responsive">
+      
+
+
+
                       <table class="table table-striped">
                           <tr>
                               <th class="text-center"></th>
@@ -407,23 +452,46 @@
                               <th>Product Name</th>
                               <th>Quantity</th>
                               <th>Price</th>
+                              <th>Status</th>
                               <th>Total</th>
-                              <th>Action</th>
+                              
                           </tr>
-                          <% latest_Order.slice(0, 5).forEach((order_Details) => { %>
+                          <% latest_Order.forEach((order_Details) => { %>
                               <% order_Details.product.forEach((product_Details) => { %>
                                   <tr>
                                       <td class="p-0 text-center"></td>
-                                      <td><%= order_Details.date.toLocaleString([], { dateStyle: 'short', timeStyle: 'short' }) %></td>
+                                      <td><%= order_Details.date.toLocaleDateString() %></td>
                                       <td><%= order_Details.orderId %></td>
                                       <td class="align-middle"><%= product_Details.productId.name %></td>
                                       <td><%= product_Details.quantity %></td>
-                                      <td><%= product_Details.productId.price %></td>
+                                      <td><%= product_Details.productId.price %></td> 
+                                      <td class="text-left"> <!-- Added class to left-align badges -->
+                                        <% if (order_Details.orderstatus === 'canceled') { %>
+                                            <div class="badge badge-pill badge-danger mb-1">Canceled</div>
+                                        <% } else if (order_Details.orderstatus === 'delivered') { %>
+                                            <div class="badge badge-pill badge-success mb-1">Delivered</div>
+                                        <% } else if (order_Details.orderstatus === 'pending') { %>
+                                            <div class="badge badge-pill badge-info mb-1">Pending</div>
+                                        <% } else if (order_Details.orderstatus === 'processing') { %>
+                                            <div class="badge badge-pill badge-primary mb-1">Processing</div>
+                                        <% } else if (order_Details.orderstatus === 'shipped') { %>
+                                            <div class="badge badge-pill badge-warning mb-1">Shipped</div>
+                                        <% } else if (order_Details.orderstatus === 'returned') { %>
+                                            <div class="badge badge-pill badge-dark mb-1">Returned</div>
+                                        <% } else if (order_Details.orderstatus === 'failed') { %>
+                                            <div class="badge badge-pill badge-danger mb-1">Failed</div>
+                                        <% } else { %>
+                                            <div class="badge badge-pill badge-secondary mb-1"><%= order_Details.orderstatus %></div>
+                                        <% } %>
+                                    </td>
                                       <td><%= product_Details.total %></td>
-                                      <td><a href="#" class="btn btn-outline-primary">Detail</a></td>
+
+                                    
+                                 
                                   </tr>
                               <% }) %>
                           <% }) %>
+                       
                       </table>
                   </div>
               </div>
@@ -500,29 +568,36 @@
             <div class="col-md-6 col-lg-12 col-xl-6">
               <div class="card">
                 <div class="card-header">
-                  <h4>Projects Payments</h4>
+                  <h4>   Payments</h4>
                 </div>
                 <div class="card-body">
                   <div class="table-responsive">
                     <table class="table table-hover mb-0">
                       <thead>
                         <tr>
-                          <th>#</th>
-                          <th>Client Name</th>
                           <th>Date</th>
+                          <th>OrderId</th>
+                          <th>status</th>
                           <th>Payment Method</th>
                           <th>Amount</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr>
-                          <td>1</td>
-                          <td>John Doe </td>
-                          <td>11-08-2018</td>
-                          <td>NEFT</td>
-                          <td>$258</td>
-                        </tr>
-                     
+
+                          <% latest_Order.forEach((order_Details) => { %>
+                            <% order_Details.product.forEach((product_Details) => { %>
+                                <tr>
+                                  
+                                  <td><%= order_Details.date.toLocaleDateString([], { dateStyle: 'short' }) %></td>
+                                    <td><%= order_Details.orderId %></td>
+                                    <td><%= order_Details.paymentStatus %></td>
+                                    <td><%= order_Details.PaymentMethod  %></td>
+                                    <td><%= product_Details.productId.price %></td>
+
+                                </tr>
+                            <% }) %>
+                        <% }) %>
                       </tbody>
                     </table>
                   </div>
@@ -624,14 +699,14 @@
         </div>
       </div>
       <footer class="main-footer">
-        <div class="footer-left">
-          <a href="templateshub.net">Templateshub</a></a>
-        </div>
         <div class="footer-right">
         </div>
       </footer>
     </div>
   </div>
+ 
+
+
   <!-- General JS Scripts -->
   <script src="/adminassets/js/app.min.js"></script>
   <!-- JS Libraies -->
@@ -642,6 +717,7 @@
   <script src="/adminassets/js/scripts.js"></script>
   <!-- Custom JS File -->
   <script src="/adminassets/js/custom.js"></script>
+
 </body>
 
 

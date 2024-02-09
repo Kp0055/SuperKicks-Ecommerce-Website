@@ -5,6 +5,7 @@ const upload = require('../middileware/categorymulter')
 const admin_Verified = require('../middileware/adminverify')
 const cat = require('../controller/admincategories')
 const product_Control = require('../controller/adminproduct')
+const pdf = require('../controller/createPdf');
 
 
 
@@ -32,13 +33,9 @@ router.get('/logout',admin_Verified,use.logout)
 
 router.get('/daily_Report',admin_Verified,use.daily_Report)
 
-router.get('/weekly_Report',admin_Verified,use.weekly_Report)
+router.get('/generate-pdf',admin_Verified,pdf.pdfDoc)
 
-router.get('/monthly_Report',admin_Verified,use.monthly_Report)
-
-
-
-
+router.get('/excelDownload',admin_Verified,pdf.excelSheet)
 
 
 
@@ -66,7 +63,11 @@ router.post('/deleteImage/:productId',admin_Verified,product_Control.deleteImage
 
 router.post('/update_status/:OrderId/:ProductId',admin_Verified,product_Control.status)
 
-router.post('/status',admin_Verified,use.orderStatus)
+router.post('/status',admin_Verified,use.orderStatus);
+
+
+
+
 
 
 

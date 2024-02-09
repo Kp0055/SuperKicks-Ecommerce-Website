@@ -59,39 +59,42 @@
 
             <!-- Products-->
             <div class="row g-4">
-                <% productdetails.forEach(Data =>{ %>
-
-                    <div class="col-8 col-sm-4 col-lg-3">
+                <% productdetails.forEach(Data => { %>
+                    <div class="col-6 col-md-4 col-lg-3">
                         <!-- Card Product-->
-                        <div class="card border border-bottom position-relative overflow-hidden h-100 transparent">
+                        <div class="card border border-bottom position-relative overflow-hidden h-100">
                             <div class="card-img position-relative">
                                 <div class="card-badges">
-                                        <span class="badge badge-card"><span class="f-w-2 f-h-2 bg-danger rounded-circle d-block me-1"></span> Sale</span>
+                                    <span class="badge badge-card"><span class="f-w-2 f-h-2 bg-danger rounded-circle d-block me-1"></span> Sale</span>
                                 </div>
                                 <span class="position-absolute top-0 end-0 p-2 z-index-20 text-muted"><i class="ri-heart-line"></i></span>
-                                <picture class="position-relative overflow-hidden d-block bg-light">
+                                <div class="position-relative overflow-hidden d-block bg-light">
                                     <img src="/category_img/<%= Data.image[0] %>" alt="Product Image" style="max-width: 100%; max-height: 100%;">
-                                    <!-- <img class="w-100 img-fluid position-relative z-index-10" title="" src="/assets/images/products/product-1.jpg" alt=""> -->
-                                </picture>
+                                </div>
                                 <div class="position-absolute start-0 bottom-0 end-0 z-index-20 p-2">
-                                    <a href="/" class="btn btn-quick-add" style="background-color: coral;">
+                                    <a href="/" class="btn btn-quick-add" style="background-color: #000; color: #fff;">
                                         <i class="ri-add-line me-2"></i> Add to Cart
                                     </a>
                                 </div>
                             </div>
-                            <div class="card-body  px-0" style="background-color: rgba(251, 219, 182, 0.838);">
-                                <a class="text-decoration-none link-cover ms-3" href="/product/<%= Data._id %>"><b> <%= Data.name %> </b></a>
-                                <small class="text-muted d-block ms-3">Starts From </small>
-                                        <p class="mt-2 mb-0 small ms-3">  <span class="text-success">  ₹ <%= Data.price %></span></p>
+                            <div class="card-body px-0" style="background-color: #e0e0e0; color: #fff;">
+                                <div class="ms-3">
+                                    <a class="text-decoration-none link-cover" href="/product/<%= Data._id %>"><b><%= Data.name %></b></a>
+                                    <hr>
+                                    <div class="mt-2 mb-0 small justify-content-between">
+                                    <small class="text-muted d-block">Starts From ₹<%= Data.price %></small>
+                                        <span class="text-success" style="font-weight: bold; font-size: larger;">₹<%= Data.price %></span>
+                                    </div>
+                                </div>
                             </div>
+                            
+                            
                         </div>
-
-                        <!-- <s class="text-muted">$329.99</s> -->
-                        <!--/ Card Product-->
                     </div>
-                   <% }) %>
-                   
+                <% }) %>
             </div>
+            
+            
             <!-- / Products-->
 
             <!-- Pagination-->

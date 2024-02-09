@@ -150,7 +150,7 @@
                   Settings
                 </a>
                 <div class="dropdown-divider"></div>
-                <a href="auth-login.html" class="dropdown-item has-icon text-danger"> <i class="fas fa-sign-out-alt"></i>
+                <a href="/admin/logout" class="dropdown-item has-icon text-danger"> <i class="fas fa-sign-out-alt"></i>
                   Logout
                 </a>
               </div>
@@ -190,40 +190,47 @@
                         <th>Order Id </th>
                         <th>Full name </th>
                         <th>Total </th>
-                        <!-- <th>Status</th> -->
                         <th>Date </th>
+                        <th>Status</th>
                         <th>Action</th>
                       </tr>
 
-                      <% full_Order.forEach((MyOrder) => { %>
-                      <tr>
-                            <td class="p-0 text-center"></td>
-                            <td><%= MyOrder.orderId %></td>
-                            <td class="text-truncate">
-                                <ul class="list-unstyled order-list m-b-0 m-b-0">
-                                    <li>   <%= MyOrder.address.name %></li>
-                                </ul>
+                     <% full_Order.forEach((MyOrder) => { %>
+                          <tr>
+                              <td class="p-0 text-center"></td>
+                              <td><%= MyOrder.orderId %></td>
+                              <td class="text-truncate">
+                                  <ul class="list-unstyled order-list m-b-0 m-b-0">
+                                      <li><%= MyOrder.address.name %></li>
+                                  </ul>
+                              </td>
+                              <td class="align-middle"><%= MyOrder.totalamount %></td>
+                              <td><%= MyOrder.createdAt.toLocaleString() %></td> 
+                              <td class="text-left"> <!-- Added class to left-align badges -->
+                                <% if (MyOrder.orderstatus === 'canceled') { %>
+                                    <div class="badge badge-pill badge-danger mb-1">Canceled</div>
+                                <% } else if (MyOrder.orderstatus === 'delivered') { %>
+                                    <div class="badge badge-pill badge-success mb-1">Delivered</div>
+                                <% } else if (MyOrder.orderstatus === 'pending') { %>
+                                    <div class="badge badge-pill badge-info mb-1">Pending</div>
+                                <% } else if (MyOrder.orderstatus === 'processing') { %>
+                                    <div class="badge badge-pill badge-primary mb-1">Processing</div>
+                                <% } else if (MyOrder.orderstatus === 'shipped') { %>
+                                    <div class="badge badge-pill badge-warning mb-1">Shipped</div>
+                                <% } else if (MyOrder.orderstatus === 'returned') { %>
+                                    <div class="badge badge-pill badge-dark mb-1">Returned</div>
+                                <% } else if (MyOrder.orderstatus === 'failed') { %>
+                                    <div class="badge badge-pill badge-danger mb-1">Failed</div>
+                                <% } else { %>
+                                    <div class="badge badge-pill badge-secondary mb-1"><%= MyOrder.orderstatus %></div>
+                                <% } %>
                             </td>
-                            <td class="align-middle">
-                                <%= MyOrder.totalamount %>
-                            </td>
-                            <!-- <td> <select name="orderStatus" onchange="status('<%= MyOrder.oederId %>','<%= MyOrder.orderstatus %>')" class="form-select mt-2" data-live-search="true">
-                              <option value="pending" <%= MyOrder.orderstatus === 'pending' ? 'selected' : '' %>>Pending</option>
-                              <option value="processing" <%= MyOrder.orderstatus === 'processing' ? 'selected' : '' %>>Processing</option>
-                              <option value="shipped" <%= MyOrder.orderstatus === 'shipped' ? 'selected' : '' %>>Shipped</option>
-                              <option value="delivered" <%= MyOrder.orderstatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
-                              <option value="canceled" <%= MyOrder.orderstatus === 'canceled' ? 'selected' : '' %>>Canceled</option>
-                              <option value="returned" <%= MyOrder.orderstatus === 'returned' ? 'selected' : '' %>>Returned</option>
-                              <option value="failed" <%= MyOrder.orderstatus === 'failed' ? 'selected' : '' %>>Failed</option>
-                            </select> %></td> -->
-                                <td><%= MyOrder.createdAt.toLocaleString() %></td> 
-                            <td>
-                                <a href="/admin/Order_view/<%= MyOrder._id %>" class="btn btn-outline-primary">Detail</a></td>
-                    </tr>
-                    <% }) %>
-                    
-                      
-               
+                            
+                              <td>
+                                  <a href="/admin/Order_view/<%= MyOrder._id %>" class="btn btn-outline-primary">Detail</a>
+                              </td>
+                          </tr>
+                      <% }) %>
                     </table>
                   </div>
                 </div>

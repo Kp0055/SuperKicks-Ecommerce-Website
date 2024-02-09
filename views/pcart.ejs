@@ -91,7 +91,11 @@
                 </div><!-- End .container -->
             </nav><!-- End .breadcrumb-nav -->
 
+		
+
             <div class="page-content">
+				<center><div id="error-message" style="color: red; font-size: medium;">   
+				</div></center>
             	<div class="cart">
 	                <div class="container" style="background-color: rgb(255, 255, 255);">
 	                	<div class="row">
@@ -114,7 +118,7 @@
 										<% fullData.product.forEach(data => { %>
 										<tr>
 											<td  class="product-col" >
-												<input type="checkbox" onchange="checkbox('<%= data.product._id %>')">
+												<input type="checkbox" onchange="checkbox('<%= data.product._id %>', this.checked)" <%= data.isSelected ? 'checked' : '' %>>
 												
 												<div class="product"  style="background-color: rgb(255, 255, 255);">
 														<a href="#">
@@ -123,6 +127,7 @@
 													<h3 class="product-title">
 														<a href="#"><%= data.product.name %></a>
 													</h3><!-- End .product-title -->
+													
 												</div><!-- End .product -->
 											</td>
 											<td class="price-col"><%= data.product.price %></td>
@@ -134,7 +139,7 @@
 																					
 											<td class="total-col"><b><%= data.product.price * data.quantity %></b></p></td>
 											<td class="remove-col"><button class="btn-remove" onclick="deleteproduct('<%= data.product._id %>')" ><i class="icon-close" style="color: red;"></i></button></td>
-											
+
 										<% }); %>
 									</tbody>
 								</table><!-- End .table table-wishlist -->

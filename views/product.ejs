@@ -211,7 +211,36 @@
                                     </picture>
                                 </div>
                             </div>
-                            <button class="btn btn-dark w-100 mt-4 mb-0 hover-lift-sm hover-boxshadow" onclick="getProductData('<%= productdetails._id %>')">Add To Shopping Bag</button>
+                      
+                            <button id="addToShoppingBagBtn" class="btn btn-danger w-100 mt-4 mb-0 hover-lift-sm hover-boxshadow" onclick="getProductData('<%= productdetails._id %>')">Add To Shopping Bag</button>
+                            <button id="addToWishlistBtn" class="btn btn-outline-dark w-100 mt-4 mb-0 hover-lift-sm hover-boxshadow">
+                                <i class="bi bi-heart"></i> Add To Wishlist
+                            </button>
+                            
+
+                            <script>
+                                
+                                let productStock = parseInt('<%= productdetails.stock %>'); 
+                            
+                                
+                                function updateButtonStatus() {
+                                    var addToShoppingBagBtn = document.getElementById('addToShoppingBagBtn');
+                                    if (productStock === 0) {
+                              
+                                        addToShoppingBagBtn.disabled = true;
+                                        addToShoppingBagBtn.innerText = "Out of Stock";
+                                    } else {
+                                        
+                                        addToShoppingBagBtn.disabled = false;
+                                        addToShoppingBagBtn.innerText = "Add To Shopping Bag";
+                                    }
+                                }
+                            
+                               
+                                updateButtonStatus();
+                            </script>
+                            
+                            
                         
                             
 

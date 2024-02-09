@@ -175,7 +175,7 @@
                 Settings
               </a>
               <div class="dropdown-divider"></div>
-              <a href="auth-login.html" class="dropdown-item has-icon text-danger"> <i class="fas fa-sign-out-alt"></i>
+              <a href="/admin/logout" class="dropdown-item has-icon text-danger"> <i class="fas fa-sign-out-alt"></i>
                 Logout
               </a>
             </div>
@@ -207,7 +207,8 @@
             <div class="status-dropdown">
               <div class="col-md-6">
                   <label for="status">Select Status:</label>
-                  <select class="form-control" id="status" name="status">
+                  <select class="form-control" id="status" name="status"  onchange="checkStatus()">
+                      <option value="<%= order.orderstatus %>"><%= order.orderstatus %></option>
                       <option value="pending" <% if(order.cancelorder === 'pending') { %>selected<% } %>>Pending</option>
                       <option value="shipped" <% if(order.cancelorder === 'shipped') { %>selected<% } %>>Shipped</option>
                       <option value="processing" <% if(order.cancelorder === 'processing') { %>selected<% } %>>Processing</option>
@@ -217,21 +218,25 @@
                       <option value="failed" <% if(order.cancelorder === 'failed') { %>selected<% } %>>Failed</option>
                   </select>
               </div>
-          </div>
-          
-                
-
+          </div>  
+                          
             <!-- Submit button -->
             <div class="submit-button" style="justify-content: space-between;">
-                <div class="col-md-6">
-                  <button class="btn btn-primary" onclick="updateStatus('<%= item.productId._id %>', '<%=  order._id %>')" type="button">Submit</button>
-                </div>
-            </div>
+              <div class="col-md-6">
+                  <% if (item.cancelOrder === 'canceled') { %>
+                      <button class="btn btn-danger" disabled>Canceled</button>
+                  <% } else { %>
+                      <button class="btn btn-primary" onclick="updateStatus('<%= item.productId._id %>', '<%= order._id %>')" type="button">Submit</button>
+                  <% } %>
+              </div>
+          </div>
+          
             
             <% }) %>
             <% }) %>
         </div>
     </div>
+
     
     
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>

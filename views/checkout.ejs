@@ -148,10 +148,10 @@
                           }
                         </style>
                         <br>
-                    <!-- <div class="row" style="justify-content: space-between; margin: 12px;">
+                    <div class="row" style="justify-content: space-between; margin: 12px;">
                     
                         <button type="button" class="btn btn-primary mt-1 ms-6" data-toggle="modal" data-target="#addModal">Add Address </button>
-                    </div> -->
+                    </div>
                       </div>
                     </div>
                   </div>
@@ -271,7 +271,7 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu-overlay"></div>
 
-    <!-- <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -280,66 +280,61 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-            <div class="modal-body">
-    
+            <div class="modal-body">       
+              <body>
+                <form id="editForm" action="/checkoutAddress" method="post" onsubmit="return modalAddressvalidateForm()">
+                    <div class="container mt-5">
+                        <h2>Edit Form</h2>
+                        <div class="form-group">
+                            <label for="name">Name:</label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Phone:</label>
+                            <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="pin">Pin:</label>
+                            <input type="tel" class="form-control" id="pin" name="pin" placeholder="Enter pin" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="city">City:</label>
+                                <input type="text" class="form-control" id="city" name="city" placeholder="Enter city" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="state">State:</label>
+                                <input type="text" class="form-control" id="state" name="state" placeholder="Enter state" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="locality">Locality:</label>
+                            <input type="text" class="form-control" id="locality" name="locality" placeholder="Enter locality" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="address">Address:</label>
+                            <input type="text" class="form-control" id="address" name="address" placeholder="Enter address" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="landmark">Landmark:</label>
+                            <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Enter landmark" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="alternative">Alternate Phone:</label>
+                            <input type="tel" class="form-control" id="alternative" name="alternative" placeholder="Enter alternate phone" required>
+                        </div>
+            
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+          </div>
           
-              <form>
-                
-  <div class="container mt-5">
-    <h2>Edit Form</h2>
-    <form action="/checkout" method="post">
-      <div class="form-group">
-        <label for="name">Name:</label>
-        <input type="text" class="form-control" id="name" name="name" placeholder="Enter name">
-      </div>
-      <div class="form-group">
-        <label for="phone">Phone:</label>
-        <input type="tel" class="form-control" id="phone" name="phone" placeholder="Enter phone">
-      </div>
-      <div class="form-group">
-        <label for="phone">Pin:</label>
-        <input type="tel" class="form-control" id="phone" name="pin" placeholder="Enter phone">
-      </div>
-      <div class="form-row">
-        <div class="form-group col-md-6">
-          <label for="city">City:</label>
-          <input type="text" class="form-control" id="city" name="city" placeholder="Enter city">
-        </div>
-        <div class="form-group col-md-6">
-          <label for="state">State:</label>
-          <input type="text" class="form-control" id="state" name="state" placeholder="Enter state">
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="locality">Locality:</label>
-        <input type="text" class="form-control" id="locality" name="locality" placeholder="Enter locality">
-      </div>
-      <div class="form-group">
-        <label for="address">Address:</label>
-        <input type="text" class="form-control" id="address" name="address" placeholder="Enter address">
-      </div>
-      <div class="form-group">
-        <label for="landmark">Landmark:</label>
-        <input type="text" class="form-control" id="landmark" name="landmark" placeholder="Enter landmark">
-      </div>
-      <div class="form-group">
-        <label for="altphone">Alternate Phone:</label>
-        <input type="tel" class="form-control" id="altphone" name="alternative" placeholder="Enter alternate phone">
-      </div>
-
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
-  </div>
-              
-               
-    
-            </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
           </div>
         </div>
-      </div> -->
+      </div>
     <!-- End .mobil-menu-overlay -->
 
 
@@ -353,6 +348,7 @@
   
 
     <script src="/javascripts/otp.js"></script>
+    <script src="/javascripts/validation.js"></script>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -432,17 +428,17 @@
                                   console.log(orderDetails);
                                   
                                   Swal.fire("Payment Successful", "Your payment was successful.", "success");
-                                  // Redirect or perform any other action upon successful payment
+                                
                                   window.location.href = '/orderplaced/' + orderDetails;
                                 }) },
                               prefill: {
-                                  // Pre-fill customer details if available
+                                
                                   name: 'Customer Name',
                                   email: 'customer@example.com',
                                   contact: 'Customer Contact Number'
                               },
                               theme: {
-                                  color: '#3399cc' // Color of the payment button
+                                  color: '#3399cc' 
                               }
                           };
   

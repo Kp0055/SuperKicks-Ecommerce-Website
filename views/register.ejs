@@ -22,6 +22,9 @@
                   <% if ( userexists !=  undefined  &&  userexists !== '') { %>
                     <p style="color: rgb(255, 0, 0);"><%=  userexists %></p>
                     <% } %>
+                    <% if (userpassword != undefined  && userpassword !== '') { %>
+                      <p style="color: rgb(255, 0, 0);"><%= userpassword   %></p>
+                      <% } %>
 
                   <div class="form-group">
                     <label class="form-label" for="register-fname">First name</label>

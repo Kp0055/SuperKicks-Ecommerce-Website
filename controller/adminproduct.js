@@ -6,11 +6,12 @@ const product = require("../model/add_product");
 const Order = require("../model/order");
 
 const adminProductList = async (req, res, next) => {
+  try {
   const call = req.query._id;
 
   console.log(call);
 
-  try {
+
     const productlist = await product.find({}).populate("parentCategory");
     res.render("adminproduct_list", { productlist });
 }catch(error){
@@ -31,9 +32,10 @@ const addProduct = async (req, res, next) => {
 };
 
 const adminEditProduct = async (req, res, next) => {
+  try {
   const dataid = req.params.id;
 
-  try {
+
     const products = await product.findOne({ _id: dataid });
     const category = await categories.find();
 
@@ -46,7 +48,7 @@ const adminEditProduct = async (req, res, next) => {
 
 const postProduct = async (req, res, next) => {
   //  console.log(req.files);
-
+  try {
   const {
     name,
     Description,
@@ -57,7 +59,7 @@ const postProduct = async (req, res, next) => {
     Discount,
     Price,
   } = req.body;
-  try {
+ 
     const filePaths = req.files.map((file) => file.filename);
     // console.log(filePaths);
 
@@ -165,30 +167,37 @@ const deleteImage = async (req, res, next) => {
 const status = async (req, res, next) => {
   const Order_ID = req.params.ProductId;
   const product_ID = req.params.OrderId;
-
-  const daTA = req.body.status;
+  const updateStatus = req.body.status;
 
   try {
-    const result = await Order.findOne({ _id: Order_ID });
+      let result;
 
-    let update_status_Details = result.product.find(
-      (xxll) => xxll.productId.toString() === product_ID
-    );
+      result = await Order.findOne({ _id: Order_ID });
 
-    update_status_Details.cancelOrder = daTA;
+      if (updateStatus === 'canceled') {
+          result.orderstatus = updateStatus;
+          result.product.forEach((product) => {
+              if (product.productId.toString() === product_ID) {
+                  product.cancelOrder = updateStatus;
+              }
+          });
+      } else {
+          result.orderstatus = updateStatus;
+      }
+      await result.save();
 
-    await result.save();
+      // Send a JSON response with success message
+      res.status(200).json({ message: 'Status updated successfully' });
 
-    res.status(200).send("sucess");
-
-    console.log(result);
-
-    console.log(update_status_Details);
-}catch(error){
-    console.error(error);
-    next(error)
+      console.log('//////////////////////updated status /////////////');
+      console.log(result);
+  } catch (error) {
+      console.error(error);
+      next(error);
   }
 };
+
+
 
 
 

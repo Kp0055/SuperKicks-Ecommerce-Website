@@ -150,7 +150,7 @@
                 Settings
               </a>
               <div class="dropdown-divider"></div>
-              <a href="auth-login.html" class="dropdown-item has-icon text-danger"> <i class="fas fa-sign-out-alt"></i>
+              <a href="/admin/logout" class="dropdown-item has-icon text-danger"> <i class="fas fa-sign-out-alt"></i>
                 Logout
               </a>
             </div>
@@ -368,7 +368,7 @@
       </div> -->
       <!-- Main Content -->
       <div class="main-content">
-        <form action="/admin/product_edit/<%= product._id %> "  method="post" enctype="multipart/form-data"  onsubmit = "return productvalidation()">
+        <form action="/admin/product_edit/<%= product._id %> "  method="post" enctype="multipart/form-data"  onsubmit = "return editproductvalidation()">
         
           <div class="card">
             <div class="card-header">
@@ -382,6 +382,7 @@
                   <div class="form-group">
                     <label><b>Product Name</b></label>
                     <input type="text" class="form-control" id="name" name="name" required value="<%= product.name %>">
+                    <span id="nameError" style="color: red;"></span>
                   </div>
                 </div>
                 <div class="col-md-6">
@@ -403,6 +404,7 @@
                   <div class="form-group">
                     <label><b>Product Description</b></label>
                     <input type="text" class="form-control" id="Description" name="Description" required value="<%= product.Description %>">
+                    <span id="DescriptionError" style="color: red;"></span>
                   </div>
                 </div>
               </div>
@@ -411,12 +413,14 @@
                   <div class="form-group">
                     <label><b>Stock</b></label>
                     <input type="text" class="form-control" id="Stock" name="Stock" required value="<%= product.stock %>">
+                    <span id="StockError" style="color: red;"></span>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                     <label><b>Color</b></label>
                     <input type="text" class="form-control" id="color" name="color" required value="<%= product.color %>">
+                    <span id="colorError" style="color: red;"></span>
                   </div>
                 </div>
               </div>
@@ -425,12 +429,14 @@
                   <div class="form-group">
                     <label><b>Discount</b></label>
                     <input type="text" class="form-control" id="Discount" name="Discount" required value="<%= product.discount %>">
+                    <span id="DiscountError" style="color: red;"></span>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
                     <label><b>Price</b></label>
                     <input type="text" class="form-control" id="Price" name="Price" value="<%= product.price %>">
+                    <span id="PriceError" style="color: red;"></span>
                   </div>
                 </div>
               </div>
