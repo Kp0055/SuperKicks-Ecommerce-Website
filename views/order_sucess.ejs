@@ -54,10 +54,10 @@
                           </div>
                           <div class="row g-0 border-bottom">
                               <div class="col-md-6">
-                                  <div class="p-3 d-flex justify-content-center align-items-center"> <span>Subtotal</span> </div>
+                                  <div class="p-3 d-flex justify-content-center align-items-center"> <span>Discount</span> </div>
                               </div>
                               <div class="col-md-6">
-                                  <div class="p-3 d-flex justify-content-center align-items-center"> <span><%= item.total %></span> </div>
+                                  <div class="p-3 d-flex justify-content-center align-items-center"> <span><%= orderDetails.discountPrice %></span> </div>
                               </div>
                           </div>
                           <div class="row g-0 border-bottom">
@@ -65,7 +65,7 @@
                                   <div class="p-3 d-flex justify-content-center align-items-center"> <span>Processing fees</span> </div>
                               </div>
                               <div class="col-md-6">
-                                  <div class="p-3 d-flex justify-content-center align-items-center"> <span> </span> </div>
+                                  <div class="p-3 d-flex justify-content-center align-items-center"> <span> 0 </span> </div>
                               </div>
                           </div>
                           <div class="row g-0">
@@ -73,7 +73,7 @@
                                   <div class="p-3 d-flex justify-content-center align-items-center"> <span class="font-weight-bold">Total</span> </div>
                               </div>
                               <div class="col-md-6">
-                                  <div class="p-3 d-flex justify-content-center align-items-center"> <span class="font-weight-bold"><%= item.total %></span> </div>
+                                  <div class="p-3 d-flex justify-content-center align-items-center"> <span class="font-weight-bold"><%= orderDetails.totalamount %></span> </div>
                               </div>
                               <% }); %>
                           </div>

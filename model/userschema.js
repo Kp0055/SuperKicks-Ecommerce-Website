@@ -7,13 +7,13 @@ const userschema = mongoose.Schema({
     firstname : {
         type : String,
         required : true,
-        unique : true
+        
     },
 
     lastname  : {
         type : String,
         required : true,
-        unique : true
+        
     },
 
     email : {
@@ -46,7 +46,8 @@ const userschema = mongoose.Schema({
 
     resetpasswordexpire :{
         type: Date
-    }
+    },
+
     
 })
 

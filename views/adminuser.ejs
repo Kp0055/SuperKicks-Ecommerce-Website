@@ -909,6 +909,22 @@
             </div>
           </div>
         </div>
+        <nav aria-label="Page navigation example">
+          <a href="/admin" class="btn btn-primary" > Back </a>
+          <ul class="pagination justify-content-end">
+              <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                  <a class="page-link" href="?page=<%= currentPage - 1 %>">Previous</a>
+              </li>
+              <% for (let i = 1; i <= totalPages; i++) { %>
+                  <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                      <a class="page-link" href="?page=<%= i %>"><%= i %></a>
+                  </li>
+              <% } %>
+              <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                  <a class="page-link" href="?page=<%= currentPage + 1 %>">Next</a>
+              </li>
+          </ul>
+      </nav>
       </div>
       <footer class="main-footer">
         <div class="footer-left">

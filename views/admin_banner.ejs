@@ -1,10 +1,14 @@
 <%- include('./partials/header') %>
 <%- include('./partials/adminsidebar') %>
 
-<script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<style>
+  /* CSS for image preview */
+  #imagePreview {
+    width: 300px;
+    height: auto;
+    margin-top: 10px;
+  }
+</style>
 
 <body>
   <div class="loader"></div>
@@ -372,199 +376,90 @@
         </aside>
       </div> -->
       <!-- Main Content -->
-      <div class="container mt-5" style="padding-top: 30px;">
-        <div class="d-flex justify-content-between">
-          <div>
-            <button id="generate-pdf-btn" class="btn btn-primary">Generate PDF</button>
-            <button id="excel-generator" class="btn btn-success">Download Excel</button>
+      <div class="main-content">
+        <form action="/admin/banner" method="post" enctype="multipart/form-data">
+          <div class="card">
+            <div class="card-header">
+              <h4>Add Banner</h4>
+            </div>
+    
+            <div class="card-body">
+              <div class="section-title mt-0"></div>
+              <div class="form-group">
+                <div class="form-group">
+                  <label>Title</label>
+                  <input type="text" class="form-control" id="title" name="title">
+                  <span id="titleError" style="color: red;"></span>
+                </div>
+                <div class="form-group">
+                  <label>Start Date</label>
+                  <input type="date" class="form-control" id="startDate" name="startDate">
+                  <span id="startDateError" style="color: red;"></span>
+                </div>
+                <div class="form-group">
+                  <label>End Date</label>
+                  <input type="date" class="form-control" id="endDate" name="endDate">
+                  <span id="endDateError" style="color: red;"></span>
+                </div>
+                <div class="form-group">
+                  <label>Image</label>
+                  <input type="file" class="form-control" id="image" name="image" accept="image/*" onchange="previewImage(event)">
+                  <span id="imageError" style="color: red;"></span>
+                </div>
+                <div id="imagePreview"></div>
+                <button type="button" class="btn btn-danger" id="deleteImageBtn" style="display: none;" onclick="deleteImage()">x</button>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
           </div>
-          <div>
-            <input type="text" id="datepicked" name="dates" />
-          </div>
-        </div>
+        </form>
       </div>
-      <style>
-        .container {
-  margin-left: 280px; /* Adjust margin-left as needed */
-}
-
-.d-flex {
-  display: flex;
-}
-
-.justify-content-between {
-  justify-content: space-between;
-}
-
-/* Optional: Adjust button margin */
-button {
-  margin-right: 5px; /* Adjust margin as needed */
-}
-      </style>
-      
-      <div class="main-content" style="padding-top: 15px;">
-
-        <table class="table table-bordered">
-
-          <thead>
-            <tr class="table-primary">
-              <th scope="col">#</th>
-              <th scope="col">DATE </th>
-              <th scope="col">ORDER ID </th>
-              <th scope="col"> PRODUCT NAME </th>
-              <th scope="col"> PRICE </th>
-              <th scope="col"> QTY </th>
-              <th scope="col"> SUBTOTAL </th>
-            </tr>
-          </thead>
-          <tbody class="table-group-divider">
-            <% 
-                let subtotal = 0; 
-
-                let rowNumber = 1;
-        
-                order_Report.forEach((data) => {  
-                    data.product.forEach((productData) => {  
-                        %>
-                        <tr>
-                            <th scope="row"><%= rowNumber %></th>
-                            <td><%= data.date.toISOString().split('T')[0] %></td>
-                            <td><%= data.orderId %></td>
-                            <td><%= productData.productId.name %></td>
-                            <td><%= productData.productId.price %></td>
-                            <td><%= productData.quantity %></td>
-                            <td><%= productData.total %></td>
-                        </tr>
-                        <% 
-                        rowNumber++;
-                        subtotal += productData.total; 
-                    }); // End of product forEach
-                }); // End of order_Report forEach
-            %>
-            <tr>
-                <th scope="row">TOTAL</th>
-                <td colspan="5"></td>
-                <td style="color: red;"><b><%= subtotal %> </b></td> 
-            </tr>
-        </tbody>
-      
-  
-        </table>
-
-        <nav aria-label="Page navigation example">
-          <a href="/admin" class="btn btn-primary"> Back </a>
-          <ul class="pagination justify-content-end">
-            <li class="page-item">
-              <a class="page-link" href="/admin/daily_Report/?page=1" tabindex="-1">Previous</a>
-            </li>
-            <% for(let i = 1; i <= totalPages; i++) { %>
-              <li class="page-item <%= currentPage == i ? 'active' : '' %>">
-                <a class="page-link" href="/admin/daily_Report/?page=<%= i %>"><%= i %></a>
-              </li>
-            <% } %>
-            <li class="page-item">
-              <a class="page-link" href="/admin/daily_Report/?page=<%= totalPages %>">Next</a>
-            </li>
-          </ul>
-        </nav>
-  
-
-      </div>   
-      </div>
+    
+   
       <footer class="main-footer">
+        <div class="footer-left">
+          <a href="templateshub.net">Templateshub</a></a>
+        </div>
         <div class="footer-right">
         </div>
       </footer>
     </div>
   </div>
 
-
-  <---- pdf ----->
-
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const generatePdfButton = document.getElementById('generate-pdf-btn');
-        generatePdfButton.addEventListener('click', () => {
-            // Redirect to the backend route for PDF generation
-            window.location.href = '/admin/generate-pdf';
-        });
-    });
-</script>
+    function previewImage(event) {
+      var imageFile = event.target.files[0];
+      var imageType = /image.*/;
 
+      if (imageFile.type.match(imageType)) {
+        var reader = new FileReader();
 
-
-
-<script>
-
-  $('input[name="dates"]').daterangepicker();
-
-
-  let startDate, endDate;
-
-
-  $('input[name="dates"]').on('apply.daterangepicker', function(ev, picker) {
-
-    startDate = picker.startDate.toDate();
-      endDate = picker.endDate.toDate();
-      
-
-      console.log('Start Date:', startDate);
-      console.log('End Date:', endDate);
-      
-      sendDataUsingQuery(startDate, endDate, "/admin/daily_Report");
-  });
-
-  function sendDataUsingQuery(startDate, endDate, endpoint) {
-    let queryString = `?start_date=${startDate.toISOString()}&end_date=${endDate.toISOString()}`;
-    let newURL = endpoint + queryString;
-    window.location.href = newURL;  
-  }
-
-
-</script>
-
-
-<script>
-  $('#excel-generator').click(function() {
-    console.log('Generating Excel...');
-    $.ajax({
-        url: '/admin/excelDownload',
-        method: 'GET',
-        xhrFields: {
-            responseType: 'arraybuffer' 
-        },
-        success: function(response) {
-            console.log('Excel generated successfully.');
-
-          
-            const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-            
-            const link = document.createElement('a');
-            link.href = window.URL.createObjectURL(blob);
-            link.download = 'users.xlsx'; 
-
-          
-            document.body.appendChild(link);
-            link.click();
-
-            
-            document.body.removeChild(link);
-        },
-        error: function(xhr, status, error) {
-            console.error('Error generating Excel:', error);
-            
+        reader.onload = function (e) {
+          var img = new Image();
+          img.src = reader.result;
+          img.width = 300; // Set image width
+          img.height = 200; // Set image height
+          var previewDiv = document.getElementById("imagePreview");
+          previewDiv.innerHTML = "";
+          previewDiv.appendChild(img);
+          document.getElementById("deleteImageBtn").style.display = "block";
         }
-    });
-});
 
+        reader.readAsDataURL(imageFile);
+      } else {
+        document.getElementById("imageError").innerHTML = "Please select an image file.";
+      }
+    }
+
+    function deleteImage() {
+      document.getElementById("image").value = "";
+      document.getElementById("imagePreview").innerHTML = "";
+      document.getElementById("deleteImageBtn").style.display = "none";
+    }
   </script>
   
 
-
-
- 
-  <script src="/javascripts/validation.js"></script>
+  <!-- General JS Scripts -->
   <script src="/adminassets/js/app.min.js"></script>
   <!-- JS Libraies -->
   <script src="/adminassets/bundles/jquery-ui/jquery-ui.min.js"></script>

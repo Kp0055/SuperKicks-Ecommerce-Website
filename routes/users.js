@@ -2,7 +2,9 @@ var express = require("express");
 var router = express.Router();
 const use = require("../controller/usercontroller");
 const productController = require("../controller/productcontroller");
+const wallet = require("../controller/walletcontroller");
 const { verifyJwt } = require("../controller/JWT");
+const coupon = require("../controller/couponController");
 
 /* GET users listing. */
 router.get("/", use.main);
@@ -17,7 +19,7 @@ router.get("/otpsucess", verifyJwt, use.getOtpSucess);
 
 router.get("/ForgotPassword", verifyJwt, use.fpassword);
 
-router.get("/products_list",productController.productList);
+router.get("/products_list", productController.productList);
 
 router.get("/product/:id", verifyJwt, productController.productDetails);
 
@@ -38,6 +40,10 @@ router.get("/checkout", verifyJwt, use.checkout);
 router.get("/custom-404-page", verifyJwt, use.error);
 
 router.get("/orderplaced/:oid", verifyJwt, use.orderSucess);
+
+router.get("/sort", verifyJwt, productController.sort);
+
+router.get('/generate_invoice',verifyJwt,use.genrateInvoice)
 
 //post
 
@@ -63,32 +69,30 @@ router.post("/update-cart-quantity", verifyJwt, use.cartQty);
 
 router.post("/checkout", verifyJwt, use.postCheckout);
 
-router.post('/checkoutAddress',verifyJwt,use.checkoutAddress)
+router.post("/checkoutAddress", verifyJwt, use.checkoutAddress);
 
-router.post(
-  "/Edit_address/:addressid",
-  verifyJwt,
-  use.postEditAddress
-);
+router.post("/Edit_address/:addressid", verifyJwt, use.postEditAddress);
 
-router.post(
-  "/delete_address/:addressDelete",
-  verifyJwt,
-  use.addressDelete
-);
+router.post("/delete_address/:addressDelete", verifyJwt, use.addressDelete);
 
-router.post(
-  "/cancelOrder/:Order/:Product",
-  verifyJwt,
-  use.orderCancel
-);
+router.post("/cancelOrder/:Order/:Product", verifyJwt, use.orderCancel);
 
-router.post(
-  "/cartSelect/:selectedProduct_Id",
-  verifyJwt,
-  use.selectProduct
-);
+router.post("/cartSelect/:selectedProduct_Id", verifyJwt, use.selectProduct);
 
 router.post("/verify_Payment", verifyJwt, use.verify);
+
+router.post("/add_Wallet/:id", verifyJwt, wallet.walletAmount);
+
+router.post("/withdrawel/:id", verifyJwt, wallet.withDrawal);
+
+router.post("/apply_Coupon", verifyJwt, coupon.couponApply);
+
+router.post("/remove_coupon", verifyJwt, coupon.couponRemove);
+
+router.post("/sort", productController.sort);
+
+router.post('/resendOtp',use.otpresend)
+ 
+
 
 module.exports = router;

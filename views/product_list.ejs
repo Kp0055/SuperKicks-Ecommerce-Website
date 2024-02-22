@@ -41,19 +41,35 @@
                     <div class="d-flex justify-content-end align-items-center mt-4 mt-lg-0 flex-column flex-md-row">
                 
                         <!-- Filter Trigger-->
-                        <button class="btn bg-light p-3 me-md-3 d-flex align-items-center fs-7 lh-1 w-100 mb-2 mb-md-0 w-md-auto " type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasFilters" aria-controls="offcanvasFilters">
-                            <i class="ri-equalizer-line me-2"></i> Filters
-                        </button>
+                        <!--  -->
                         <!-- / Filter Trigger-->
                 
                         <!-- Sort Options-->
-                            <select class="form-select form-select-sm border-0 bg-light p-3 pe-5 lh-1 fs-7">
-                                <option selected>Sort By</option>
-                                <option value="1">Hi Low</option>
-                                <option value="2">Low Hi</option>
-                                <option value="3">Name</option>
-                            </select>
-                        <!-- / Sort Options-->
+                        <script>
+                            const sortProducts = async () => {
+                                const sort = document.getElementById('sortBySelect').value
+                                const response = await fetch('/sort', {
+                                    method:'POST',
+                                    headers:{'Content-Type':'application/json'},
+                                    body:JSON.stringify({sort})
+                                })
+                                if(response.status === 200) {
+                                    location.reload()
+                                }
+                            }
+                        </script>
+                        <select id="sortBySelect" class="form-select form-select-sm border-0 bg-light p-3 pe-5 lh-1 fs-7" onchange="sortProducts()">
+                            <option <%= sort === 'relevance' ? 'selected' : '' %> value="relevance">Relevance</option>
+                            <option <%= sort === 'high' ? 'selected' : '' %> value="high">High to Low</option>
+                            <option <%= sort === 'low' ? 'selected' : '' %> value="low">Low to High</option>
+                            <option <%= sort === 'new' ? 'selected' : '' %> value="new">Newest</option>
+                          </select>
+                          
+                      
+                        
+                        <!-- Your JavaScript code to handle the user selection and trigger the sorting -->
+                       
+                       
                     </div>
                 </div>            <!-- /Category Toolbar-->
 
@@ -223,7 +239,7 @@
             <!-- / Brands Filter -->
     
             <!-- Sizes Filter -->
-            <div class="py-4 widget-filter border-top">
+            <!-- <div class="py-4 widget-filter border-top">
               <a class="small text-body text-decoration-none text-secondary-hover transition-all transition-all fs-6 fw-bolder d-block collapse-icon-chevron"
                 data-bs-toggle="collapse" href="#filter-modal-sizes" role="button" aria-expanded="true"
                 aria-controls="filter-modal-sizes">
@@ -266,7 +282,7 @@
                       <label class="form-check-label fw-normal" for="filter-sizes-modal-10">11.5</label>
                   </div>            </div>
               </div>
-            </div>
+            </div> -->
             <!-- / Sizes Filter -->
     
             <!-- Colour Filter -->

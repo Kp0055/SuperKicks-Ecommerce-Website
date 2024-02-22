@@ -1,54 +1,54 @@
 //validation for sign up
 
-function validateForm() {
-  //clear message
-  console.log(" validation is working ");
+function signupvalidateForm() {
+  alert('VANNU 0')
+  var firstName = document.getElementById('register-fname').value;
+  var lastName = document.getElementById('register-lname').value;
+  var email = document.getElementById('register-email').value;
+  var phoneNumber = document.getElementById('register-pname').value;
+  var password = document.getElementById('register-password').value;
+  var confirmPassword = document.getElementById('confirm-password').value;
 
-  document.getElementById("firstNameError").textContent = "";
-  document.getElementById("lastNameError").textContent = "";
-  document.getElementById("emailError").textContent = "";
-  document.getElementById("phoneError").textContent = "";
-  document.getElementById("passwordError").textContent = "";
+  // Regular expressions for validation
+  var nameRegex = /^[a-zA-Z]+(([',. -][a-zA-Z ])?[a-zA-Z]*)*$/;
+  var emailRegex = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
+  var phoneRegex = /^\d{10}$/; // for 10 digit phone number
+  var passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/; // Minimum eight characters, at least one uppercase letter, one lowercase letter and one number
 
-  //get the value
+  // Validation 
 
-  const FirstName = document.getElementById("register-fname").value.trim();
-  const LastName = document.getElementById("register-lname").value.trim();
-  const Email = document.getElementById("register-email").value.trim();
-  const PhoneNumber = document.getElementById("register-pname").value.trim();
-  const Password = document.getElementById("register-password").value.trim();
+  
 
-  const NameRegex = /^[a-zA-Z]+$/;
-  if (!NameRegex.test(FirstName)) {
-    document.getElementById("firstNameError").textContent =
-      "invalid first name";
-    return false;
+  if (!nameRegex.test(firstName)) {
+      document.getElementById('firstNameError').innerText = "Invalid first name";
+      return false;
+  }
+  if (!nameRegex.test(lastName)) {
+      document.getElementById('lastNameError').innerText = "Invalid last name";
+      return false;
+  }
+  if (!emailRegex.test(email)) {
+      document.getElementById('emailError').innerText = "Invalid email";
+      return false;
+  }
+  if (!phoneRegex.test(phoneNumber)) {
+      document.getElementById('phoneError').innerText = "Invalid phone number";
+      return false;
+  }
+  if (!passwordRegex.test(password)) {
+      document.getElementById('passwordError').innerText = "Invalid password. Minimum eight characters, at least one uppercase letter, one lowercase letter and one number";
+      return false;
+  }
+  if (password !== confirmPassword) {
+      document.getElementById('confirm-passwordError').innerText = "Passwords do not match";
+      return false;
   }
 
-  if (!NameRegex.test(LastName)) {
-    document.getElementById("lastNameError").textContent = "invalid last name";
-    return false;
-  }
-
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!emailRegex.test(Email)) {
-    document.getElementById("emailError").textContent = "invalid email";
-    return false;
-  }
-
-  if (Password.length < 10) {
-    document.getElementById("passwordError").textContent =
-      "Password must be at least 10 characters";
-    return false;
-  }
-
-  const phoneNumberRegex = /^\d{10}$/;
-  if (!phoneNumberRegex.test(PhoneNumber)) {
-    document.getElementById("phoneError").textContent = "invalid phone number";
-    return false;
-  }
+  // If all validations pass
   return true;
 }
+
+
 
 /// validation for login
 
@@ -247,137 +247,10 @@ function productvalidation() {
   return true;
 }
 
-//edit product 
-
-function productvalidation() {
-  // e.preventDefault()
+//edit product
 
 
-  // Reset error messages
-
-  document.getElementById("nameError").textContent = "";
-
-  document.getElementById("DescriptionError").textContent = "";
-
-  document.getElementById("StockError").textContent = "";
-
-  document.getElementById("PriceError").textContent = "";
-
-  document.getElementById("colorError").textContent = "";
-  
-  document.getElementById("DiscountError").textContent = "";
-
-  document.getElementById("fileError").textContent = "";
-
-  document.getElementById("cropfileError").textContent = "";
-
-  // Get form input values
-
-  const name = document.getElementById("name").value.trim();
-  const description = document.getElementById("Description").value.trim();
-  const stock = document.getElementById("Stock").value.trim();
-  const price = document.getElementById("Price").value.trim();
-  const color = document.getElementById("color").value.trim();
-  const discount = document.getElementById("Discount").value.trim();
-  const fileInput = document.getElementById("image");
-  const cropInput = document.getElementById("cropimage");
-
-  // Validate name
-  const nameRegex = /^[a-zA-Z]+(\s[a-zA-Z]+)*/;
-
-  if (!nameRegex.test(name)) {
-    document.getElementById("nameError").textContent = "Invalid name format";
-    return false;
-  }
-
-  // Validate description
-  const descriptionRegex = /^[a-zA-Z]+(\s[a-zA-Z]+)*/;
-  
-  if (!descriptionRegex.test(description)) {
-    document.getElementById("DescriptionError").textContent =
-      "Invalid description format";
-    return false;
-  }
-
-  // Validate stock
-  
-  if (!/^\d+$/.test(stock) || stock <= 0 || stock == -1) {
-    document.getElementById("StockError").textContent =
-      "Please enter a valid stock quantity";
-    return false;
-  }
-
-  // Validate price
-
-  if (parseInt(price) <= 0) {
-    document.getElementById("PriceError").textContent =
-      "Please enter a valid category price";
-    return false;
-  }
-
-  const colorRegex = /^[a-zA-Z]+(\s[a-zA-Z]+)*$/;
-
-  if (!colorRegex.test(color)) {
-    document.getElementById("colorError").textContent = "Invalid name format";
-    return false;
-  }
-
-
-  if (
-    !/^\d+$/.test(discount) ||
-    discount < 0 ||
-    discount > 100 ||
-    discount == -1
-  ) {
-    document.getElementById("DiscountError").textContent =
-      "Please enter a valid category discount percentage";
-    return false;
-  }
-
-  // Check if no files are selected for crop image
- 
-  if (!cropInput.files.length) {
-    document.getElementById("cropfileError").textContent = "Crop Image is required";
-    return false;
-  }
-
-  // Check if no files are selected for main image
-
-  if (!fileInput.files.length) {
-    document.getElementById("fileError").textContent = "Main Image is required";
-    return false;
-  }
-
-  // Check if the selected files have valid image extensions
-  const allowedImageExtensions = ["jpg", "jpeg", "png", "gif"];
-
-  // Validate main image
-  for (let i = 0; i < fileInput.files.length; i++) {
-    const fileName = fileInput.files[i].name;
-    const fileExtension = fileName.split(".").pop().toLowerCase();
- 
-    if (!allowedImageExtensions.includes(fileExtension)) {
-      document.getElementById("fileError").textContent =
-        "Invalid image file. Please upload files with valid image extensions (jpg, jpeg, png, gif).";
-      return false;
-    }
-  }
-
-  // Validate crop image
-  for (let i = 0; i < cropInput.files.length; i++) {
-    const fileName = cropInput.files[i].name;
-    const fileExtension = fileName.split(".").pop().toLowerCase();
-    
-    if (!allowedImageExtensions.includes(fileExtension)) {
-      document.getElementById("cropfileError").textContent =
-        "Invalid image file. Please upload files with valid image extensions (jpg, jpeg, png, gif).";
-      return false;
-    }
-  }
-
-  // All checks passed, no errors
-  return true;
-}function editproductvalidation() {
+function editproductvalidation() {
   // e.preventDefault()
 
 

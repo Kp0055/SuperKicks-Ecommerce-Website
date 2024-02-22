@@ -571,6 +571,96 @@ function updateStatus(OrderId, ProductId) {
 }
 
 
+// addWallet  Money
+
+
+function addWalletMoney(profileId) {
+  var amount = document.getElementById('amount').value; // Get the amount entered by the user
+
+  var dataToSend = {
+      amount: amount
+  };
+
+  fetch(`/add_Wallet/${profileId}`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json', // Specify the content type of the request body
+          // Add any additional headers as needed
+      },
+      body: JSON.stringify(dataToSend) // Convert the data to JSON format
+  })
+  .then(response => {
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+      }
+      return response.json();
+  })
+  .then(data => {
+      console.log(data); // Log the response data for debugging purposes
+      // Display SweetAlert success message
+      Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'Amount has been added to the wallet',
+      });
+  })
+  .catch(error => {
+      console.error('There was a problem with your fetch operation:', error);
+      // Display SweetAlert error message
+      Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'There was a problem adding amount to the wallet',
+      });
+  });
+}
+
+
+
+function withDrawal(profileId) {
+  var amount = document.getElementById('amount').value; // Get the amount entered by the user
+
+  var dataToSend = {
+      amount: amount
+  };
+
+  fetch(`/withdrawel/${profileId}`, {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json', // Specify the content type of the request body
+          // Add any additional headers as needed
+      },
+      body: JSON.stringify(dataToSend) // Convert the data to JSON format
+  })
+  .then(response => {
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+      }
+      return response.json();
+  })
+  .then(data => {
+      console.log(data); // Log the response data for debugging purposes
+      // Display SweetAlert success message
+      Swal.fire({
+          icon: 'success',
+          title: 'Success',
+          text: 'THE AMOUNT HAS BEEN SENT TO YOUR BANK ACCOUNT ',
+      });
+  })
+  .catch(error => {
+      console.error('There was a problem with your fetch operation:', error);
+      // Display SweetAlert error message
+      Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'There was a problem adding amount to the wallet',
+      });
+  });
+}
+
+
+
+
 
 
 

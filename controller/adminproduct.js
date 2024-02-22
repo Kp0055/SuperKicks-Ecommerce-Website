@@ -7,16 +7,27 @@ const Order = require("../model/order");
 
 const adminProductList = async (req, res, next) => {
   try {
-  const call = req.query._id;
+    const perPage = 10; // Number of products per page
+    let page = parseInt(req.query.page) || 1; // Get the current page from query parameters
+    page = Math.max(1, page); // Ensure page is at least 1
 
-  console.log(call);
+    // Fetch products for the current page
+    const products = await product.find({})
+      .populate("parentCategory")
+      .skip(perPage * (page - 1))
+      .limit(perPage);
 
+    // Count total number of products
+    const totalProducts = await product.countDocuments();
 
-    const productlist = await product.find({}).populate("parentCategory");
-    res.render("adminproduct_list", { productlist });
-}catch(error){
+    res.render("adminproduct_list", {
+      products,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / perPage),
+    });
+  } catch (error) {
     console.error(error);
-    next(error)
+    next(error);
   }
 };
 
@@ -25,41 +36,40 @@ const addProduct = async (req, res, next) => {
     const categoryData = await categories.find({});
     // console.log(categoryData);
     res.render("adminaddproduct", { categoryData });
-}catch(error){
+  } catch (error) {
     console.error(error);
-    next(error)
+    next(error);
   }
 };
 
 const adminEditProduct = async (req, res, next) => {
   try {
-  const dataid = req.params.id;
-
+    const dataid = req.params.id;
 
     const products = await product.findOne({ _id: dataid });
     const category = await categories.find();
 
     res.render("admin_edit_product", { product: products, category });
-}catch(error){
+  } catch (error) {
     console.error(error);
-    next(error)
+    next(error);
   }
 };
 
 const postProduct = async (req, res, next) => {
   //  console.log(req.files);
   try {
-  const {
-    name,
-    Description,
-    parentCategory,
-    Stock,
-    Size,
-    color,
-    Discount,
-    Price,
-  } = req.body;
- 
+    const {
+      name,
+      Description,
+      parentCategory,
+      Stock,
+      Size,
+      color,
+      Discount,
+      Price,
+    } = req.body;
+
     const filePaths = req.files.map((file) => file.filename);
     // console.log(filePaths);
 
@@ -74,9 +84,9 @@ const postProduct = async (req, res, next) => {
       price: Price,
       image: filePaths,
     });
-}catch(error){
+  } catch (error) {
     console.error(error);
-    next(error)
+    next(error);
   }
 
   res.redirect("/admin/product_list");
@@ -114,9 +124,9 @@ const editProduct = async (req, res, next) => {
       );
       res.redirect("/admin/product_list");
     }
-}catch(error){
+  } catch (error) {
     console.error(error);
-    next(error)
+    next(error);
   }
 };
 const unList = async (req, res, next) => {
@@ -128,9 +138,9 @@ const unList = async (req, res, next) => {
     await findproduct.save();
 
     res.status(200).send("sucess");
-}catch(error){
+  } catch (error) {
     console.error(error);
-    next(error)
+    next(error);
   }
 };
 
@@ -138,9 +148,9 @@ const deleteItem = async (req, res, next) => {
   const data = req.params.deleteId;
   try {
     const delete_data = await product.deleteOne({ _id: data });
-}catch(error){
+  } catch (error) {
     console.error(error);
-    next(error)
+    next(error);
   }
   res.status(200).send("success");
 };
@@ -158,9 +168,9 @@ const deleteImage = async (req, res, next) => {
     await product_edit.save();
 
     res.status(200).send("sucess");
-}catch(error){
+  } catch (error) {
     console.error(error);
-    next(error)
+    next(error);
   }
 };
 
@@ -170,36 +180,32 @@ const status = async (req, res, next) => {
   const updateStatus = req.body.status;
 
   try {
-      let result;
+    let result;
 
-      result = await Order.findOne({ _id: Order_ID });
+    result = await Order.findOne({ _id: Order_ID });
 
-      if (updateStatus === 'canceled') {
-          result.orderstatus = updateStatus;
-          result.product.forEach((product) => {
-              if (product.productId.toString() === product_ID) {
-                  product.cancelOrder = updateStatus;
-              }
-          });
-      } else {
-          result.orderstatus = updateStatus;
-      }
-      await result.save();
+    if (updateStatus === "canceled") {
+      result.orderstatus = updateStatus;
+      result.product.forEach((product) => {
+        if (product.productId.toString() === product_ID) {
+          product.cancelOrder = updateStatus;
+        }
+      });
+    } else {
+      result.orderstatus = updateStatus;
+    }
+    await result.save();
 
-      // Send a JSON response with success message
-      res.status(200).json({ message: 'Status updated successfully' });
+    // Send a JSON response with success message
+    res.status(200).json({ message: "Status updated successfully" });
 
-      console.log('//////////////////////updated status /////////////');
-      console.log(result);
+    console.log("//////////////////////updated status /////////////");
+    console.log(result);
   } catch (error) {
-      console.error(error);
-      next(error);
+    console.error(error);
+    next(error);
   }
 };
-
-
-
-
 
 module.exports = {
   adminProductList,
@@ -212,4 +218,3 @@ module.exports = {
   deleteImage,
   status,
 };
-

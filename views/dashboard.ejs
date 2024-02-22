@@ -1,9 +1,7 @@
 
 <%- include('./partials/userheader') %>
 
-<!-- Plugins CSS File -->
-<!-- <link rel="stylesheet" href="/userassets/css/bootstrap.min.css">/ -->
-<!-- Main CSS File -->
+
 <link rel="stylesheet" href="/userassets/css/style.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha384-ezQBOl89l7KsoY2TPrhyVzOzIw4Nf/i4f9qyG2iQZshcvtKT8T1VPZz0IK67W1L4" crossorigin="anonymous">
 
@@ -98,6 +96,9 @@ img {
 								    <li class="nav-item">
 								        <a class="nav-link" id="tab-account-link" data-toggle="tab" href="#tab-account" role="tab" aria-controls="tab-account" aria-selected="false"> ADD ADDRESS </a>
 								    </li>
+									<li class="nav-item">
+								        <a class="nav-link" id="tab-wallet-link" data-toggle="tab" href="#tab-wallet" role="tab" aria-controls="tab-wallet" aria-selected="false"> WALLET </a>
+								    </li>
 									
 								    <li class="nav-item">
 								        <a class="nav-link" href="/logout">Log Out</a>
@@ -128,6 +129,9 @@ img {
 																	  </div>
 																   </div>
 																 </div>
+
+																
+
 															  <p class="text-muted mb-1">Hello,</p>
 															  <h4 class="my-3"><%= profileData.firstname %> <%= profileData.lastname %> </h4>
 															  <br>
@@ -226,7 +230,10 @@ img {
 														<th scope="col"><b>Product Name</b></th>
 														<th scope="col"><b>Price</b></th>
 														<th scope="col"><b>Status</b></th>
-														<th scope="col"></th>
+														<th scope="col"><b>Action</b></th>
+														<th scope="col"><b></b></th>
+
+													
 													</tr>
 												</thead>
 												<tbody>
@@ -239,7 +246,26 @@ img {
 															  </td>
 															  <td><%= product.productId.name %></td>
 															  <td><%= product.productId.price %></td>
-															  <td><%= product.cancelOrder %></td>
+															  <td><%= order.orderstatus %></td>
+															  <td><button class="generate-pdf-btn btn btn-outline-info" data-order-id="<%= order._id %>">invoice</button></td>
+															  <td> 
+															  <script>
+																 // JavaScript
+																	document.addEventListener('DOMContentLoaded', () => {
+																		const tableBody = document.querySelector('tbody');
+
+																		tableBody.addEventListener('click', (event) => {
+																			if (event.target.classList.contains('generate-pdf-btn')) {
+																				const orderId = event.target.dataset.orderId;
+																				console.log(orderId);
+																				window.location.href = '/generate_invoice?orderId=' + orderId;
+																			}
+																		});
+																	});
+
+															  </script>
+															  
+
 															  <td>
 																<% if (product.cancelOrder === 'canceled') { %>
 																  <button type="button" class="btn btn-outline-secondary" disabled>Cancelled</button>
@@ -255,6 +281,7 @@ img {
 														  <td colspan="5">No orders available.</td>
 														</tr>
 													  <% } %>
+
 													</tbody>
 											</table>
 										</div>
@@ -365,7 +392,80 @@ img {
 												</button>
 											</form>
 										</div>
-										
+
+										<div class="tab-pane fade" id="tab-wallet" role="tabpanel" aria-labelledby="tab-wallet-link">
+											<div class="container">
+												<div class="row">
+													<div class="col-md-6 "> <!-- Center content horizontally -->
+														<div class="card" style="border: 2px solid #000000; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+															<div class="card-body">
+																<h5 class="card-title" style="color: #eeb405; font-size: 24px; font-weight: bold; margin-bottom: 10px;">Wallet Balance</h5>
+																<h5 class="card-text">Rs:<%= walletAmount.balance %></h5>
+															</div>
+														</div>
+														
+														<!-- Add Money / Withdraw Money -->
+														<div class="card mt-4" style=" border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+															<div class="card-body">
+																<h5 class="card-title" style="color: #000000; font-size: 24px; font-weight: bold; margin-bottom: 20px;">Manage Wallet</h5>
+																<form>
+																	<div class="form-group" style="margin-bottom: 15px;">
+																		<label for="amount" style="font-size: 16px; color: #333;">Amount:</label>
+																		<input type="text" class="form-control" id="amount" placeholder="Enter amount" style="border-radius: 5px;">
+																	</div>
+																	<button type="submit" class="btn btn-primary" onclick="addWalletMoney('<%= profileData.id %>')" style="background-color: #007bff; border: none; border-radius: 5px; padding: 10px 20px; font-size: 16px; margin-right: 10px;">Add Money</button>
+																	<button type="submit" class="btn btn-danger" onclick="withDrawal('<%= profileData.id %>')" style="background-color: #dc3545; border: none; border-radius: 5px; padding: 10px 20px; font-size: 16px;">Withdraw Money</button>
+																</form>
+															</div>
+														</div>
+
+														<div class="card mt-4" style="border: 1px solid #ccc; border-radius: 8px; padding: 10px;">
+															<div class="card-body">
+																<h5 class="card-title" style="color: #333; font-size: 20px;">Transaction History</h5>
+																<div class="table-responsive">
+																	<table class="table mt-3">
+																		<thead>
+																			<tr>
+																				<th scope="col">Time and Date</th>
+																				<th scope="col">Transaction ID</th>
+																				<th scope="col">Type</th>
+																				<th scope="col">Amount</th>
+																			</tr>
+																		</thead>
+																		<tbody>
+																			<% 
+																			const lastTenTransactions = walletAmount.transactions.slice(-5).reverse();
+																			lastTenTransactions.forEach((transaction) => {
+																				// Determine the color and sign based on transaction type
+																				let colorClass = '';
+																				let sign = '';
+																				if (transaction.type === 'deposit' || transaction.type === 'refund') {
+																					colorClass = 'text-success'; // Green color for deposit and refund
+																					sign = '+';
+																				} else if (transaction.type === 'withdrawal' || transaction.type === 'purchase') {
+																					colorClass = 'text-danger'; // Red color for withdrawal and purchase
+																					sign = '-';
+																				}
+																			%>
+																				<tr>
+																					<td><%= new Date(transaction.timestamp).toLocaleDateString() %></td>
+																					<td><%= transaction._id %></td>
+																					<td><span class="<%= colorClass %>"><%= transaction.type %></span></td>
+																					<td><span class="<%= colorClass %>"><%= sign %><%= transaction.amount %></span></td>
+																				</tr>
+																			<% }) %>
+																		</tbody>
+																	</table>
+																</div>
+																<div style="text-align: right;">
+																	<a href="/view-all-transactions">View All</a>
+																</div>
+															</div>
+														</div>														
+													</div>
+												</div>
+											</div>
+										</div>
 									</div>
 								</div><!-- End .col-lg-9 -->
 	                	</div><!-- End .row -->

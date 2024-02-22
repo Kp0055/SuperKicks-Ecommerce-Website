@@ -4,9 +4,14 @@ const mus = require("../model/userschema");
 const verifyJwt = async (req, res, next) => {
   try {
     const token = req.cookies ? req.cookies.token : null;
+    console.log(req.path);
+    if (!req.path === "/products_list") req.session.sort = 'relevance';
     if (!token) {
-        console.log('token1')
-      return req.path === "/login" || req.path === "/signup"
+      console.log("token1");
+      return req.path === "/login" ||
+        req.path === "/signup" ||
+        req.path === "/otpverification" ||
+        req.path === "/ForgotPassword"
         ? next()
         : res.redirect("/login");
     }
@@ -15,14 +20,14 @@ const verifyJwt = async (req, res, next) => {
         if (err.message === "TokenExpirationError") {
           req.session.err = "Session Expired";
           res.clearCookie("token");
-          console.log('token2')
+          console.log("token2");
           return req.path === "/login" || req.path === "/signup"
             ? next()
             : res.redirect("/login");
         } else {
           req.sesssion.err = "Internal server Error";
           res.clearCookie("token");
-          console.log('token3')
+          console.log("token3");
           return req.path === "/login" || req.path === "/signup"
             ? next()
             : res.redirect("/login");
@@ -33,7 +38,7 @@ const verifyJwt = async (req, res, next) => {
         if (!user) {
           req.session.err = "User Not Found";
           res.clearCookie("token");
-          console.log('token4')
+          console.log("token4");
           return req.path === "/login" || req.path === "/signup"
             ? next()
             : res.redirect("/login");
@@ -41,15 +46,15 @@ const verifyJwt = async (req, res, next) => {
         if (user.isblocked) {
           req.session.err = "Sorry User Blocked";
           res.clearCookie("token");
-          console.log('token5')
+          console.log("token5");
           return req.path === "/login" || req.path === "/signup"
             ? next()
             : res.redirect("/login");
         }
-        if(req.path === "/login" || req.path === "/signup"){
-         return  res.redirect("/");
+        if (req.path === "/login" || req.path === "/signup") {
+          return res.redirect("/");
         }
-        req.userId=user._id
+        req.userId = user._id;
         return next();
       }
     });

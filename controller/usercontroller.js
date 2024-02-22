@@ -16,6 +16,12 @@ const cart = require("../model/cart");
 const Order = require("../model/order");
 const { addAbortSignal } = require("stream");
 const Razorpay = require("razorpay");
+const wallet = require('../model/wallet')
+const ProductModel = require("../model/add_product");
+const banner = require('../model/banner')
+const coupon = require('../model/coupon')
+const PDFDocument = require("pdfkit-table");
+
 
 //function to generate otp
 
@@ -30,18 +36,18 @@ const razorpayInstance = new Razorpay({
 
 //get
 
-const main = async (req, res, next) => {
-  try {
-    const categories = await category.find({ isActive: true });
+  const main = async (req, res, next) => {
+    try {
+      const categories = await category.find({ isActive: true });
 
-    console.log(req.userId);
+      const banner_Display = await banner.find({});
 
-    res.render("index", { category: categories });
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-};
+      res.render("index", { category: categories,banner_Display });
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  };
 
 const getLogin = (req, res, next) => {
   try {
@@ -143,6 +149,7 @@ const productCart = async (req, res, next) => {
     const fullData = await cart
       .findOne({ user: userId })
       .populate("product.product");
+      
 
     res.render("pcart", { fullData, category: categories });
   } catch (error) {
@@ -157,10 +164,10 @@ const account = async (req, res, next) => {
 
   const ids = req.userId;
 
- 
     const profileAddresses = await Myaddress.find({ parentuser: ids });
     const profileData = await mus.findOne({ _id: ids });
-    const Myorders = await Order.find({})
+    const walletAmount = await wallet.findOne({userId:ids});
+    const Myorders = await Order.find({userId:ids})
       .populate("product.productId")
       .sort({ createdAt: -1 });
   
@@ -170,6 +177,7 @@ const account = async (req, res, next) => {
       profileAddresses,
       profileData,
       Myorders,
+      walletAmount,
       
     });
  
@@ -204,9 +212,10 @@ const editsAddress = async (req, res, next) => {
 const checkout = async (req, res, next) => {
   const pro = req.userId;
 
- 
-
   try {
+
+    const couponData = await coupon.find({ islist: true });
+
     const userAddress = await Myaddress.findOne({ parentuser: pro }).populate(
       "address"
     );
@@ -216,16 +225,31 @@ const checkout = async (req, res, next) => {
       .findOne({ user: pro })
       .populate("product.product");
 
+ 
+
     const selectedProducts = productorder.product.filter(
       (xx) => xx.isSelected === true
     );
+ 
 
     if (selectedProducts.length === 0) {
       return res.redirect("/cart");
     }
+
+    let couponDetails = null;
+     if(req.session && req.session.couponData){
+
+      couponDetails=req.session.couponData;
+
+     }
+    
     res.render("checkout", {
       userAddress,
-      productorder: { product: selectedProducts },
+      productorder,
+      couponData,
+      couponDetails,
+      productorderprice: { product: selectedProducts },
+     
     });
   } catch (error) {
     console.error(error);
@@ -248,7 +272,7 @@ const orderSucess = async (req, res, next) => {
 
     console.log("//////////////////////////orde coming ///////");
 
-    console.log(loooo);
+ 
 
     const categories = await category.find({ isActive: true });
     const orderDetails = await Order.findOne({ _id: loooo }).populate(
@@ -323,18 +347,27 @@ const postLogin = async (req, res, next) => {
 };
 
 const postRegister = async (req, res, next) => {
-  const { sfirstname, slastname, semail, spassword, sphonenumber } = req.body;
+  const { sfirstname, slastname, semail, spassword, sphonenumber, sconfirm_password } = req.body;
+  console.log({ sfirstname, slastname, semail, spassword, sphonenumber, sconfirm_password })
 
-  if (spassword.length < 10) {
-    req.session.userpassword = "Password must be at least 10 characters long.";
-    return res.redirect("/signup"); // Redirect to the signup page or handle the response accordingly
+  // Check if any of the required fields are empty
+  if (!sfirstname || !slastname || !semail || !spassword || !sphonenumber || !sconfirm_password) {
+    req.session.errorMessage = "Please fill all the fields"; 
+    return res.redirect("/signup"); 
   }
 
   const hashedPassword = await bcrypt.hash(spassword, 10);
 
+  if (spassword.length < 10 || spassword !== sconfirm_password) {
+    req.session.userpassword = "Password must be at least 10 characters long and match the confirmation.";
+    return res.redirect("/signup");
+  }
+
+  console.log('njn vannu password ');
+
   try {
     const existingUser = await mus.findOne({
-      $or: [{ username: slastname }, { email: semail }],
+      $or: [{ username: sfirstname }, { email: semail }],
     });
 
     if (existingUser) {
@@ -351,6 +384,8 @@ const postRegister = async (req, res, next) => {
     });
 
     req.session.maindata = userdata;
+
+    console.log('njn vannu email pova');
 
     async function sendOTPEmail(otp) {
       const transporter = nodemailer.createTransport({
@@ -369,10 +404,17 @@ const postRegister = async (req, res, next) => {
       };
 
       req.session.verify = otp;
+      console.log(otp);
+      console.log('njn vannu email ayachu');
 
       try {
         const info = await transporter.sendMail(mailOptions);
         console.log("Email sent:", info.response);
+
+        // Create user's address and cart
+        await createAddress(req.session.maindata._id);
+        await createCart(req.session.maindata._id);
+        await createWallet(req.session.maindata._id);
 
         res.redirect("/otpverification");
       } catch (error) {
@@ -385,6 +427,40 @@ const postRegister = async (req, res, next) => {
   } catch (error) {
     console.error(error);
     next(error);
+  }
+};
+
+// Function to create user's address
+const createAddress = async (userId) => {
+  try {
+    // Create the address for the user using the userId
+    // Example:
+    await Myaddress.create({ parentuser: userId, address: [] });
+  } catch (error) {
+    console.error("Error creating address:", error);
+    throw error;
+  }
+};
+
+// Function to create user's cart
+const createCart = async (userId) => {
+  try {
+    // Create the cart for the user using the userId
+    // Example:
+    await cart.create({ user: userId, products: [], totalamount: 0 });
+  } catch (error) {
+    console.error("Error creating cart:", error);
+    throw error;
+  }
+};
+const createWallet = async (userId) => {
+  try {
+    // Create the wallet for the user using the userId
+    // Example:
+    await wallet.create({ userId: userId, transactions: [], balance: 0 });
+  } catch (error) {
+    console.error("Error creating wallet:", error);
+    throw error;
   }
 };
 
@@ -740,13 +816,23 @@ const createNewOrder = async (
   profile_details,
   OrderAddress,
   totalAmountSelected,
+  discountTotal,
   res
 ) => {
   try {
+
+    console.log( paymentMethod,
+      selectedProducts,
+      profile_details,
+      OrderAddress,
+      totalAmountSelected,
+      discountTotal,);
+
     const newOrder = {
       userId: profile_details,
       totalamount: totalAmountSelected,
       PaymentMethod: paymentMethod,
+      discountPrice: discountTotal,
       product: [],
       address: {
         name: OrderAddress.name,
@@ -796,9 +882,15 @@ const createNewOrder = async (
     // Remove ordered products from the user's cart
     const updatedCart = await cart.findOneAndUpdate(
       { user: profile_details },
-      { $pull: { product: { isSelected: true } } },
+      { 
+          $pull: { product: { isSelected: true } },
+          $unset: { totalamount: "" } 
+      },
       { new: true }
-    );
+  );
+  
+
+
     console.log("_____________________");
     console.log(order);
     console.log("_____________________");
@@ -848,14 +940,26 @@ const postCheckout = async (req, res, next) => {
     const payment_stored = req.body.payment;
     const profile_details = req.userId;
 
+  console.log(payment_stored );
+
+
+
+
     const profile = await Myaddress.findOne({ parentuser: profile_details });
     const cartproducts = await cart
       .findOne({ user: profile_details })
       .populate("product.product");
 
+     
+
+
     const selectedProducts = cartproducts.product.filter(
       (xx) => xx.isSelected === true
     );
+    
+    if (selectedProducts.length === 0) {
+      return res.status(400).json({ error: "No products selected for checkout" });
+    }
 
     const addressdetail = profile.address.filter(
       (add) => add._id.toString() === address_stored
@@ -866,15 +970,62 @@ const postCheckout = async (req, res, next) => {
       return total + item.quantity * item.product.price;
     }, 0);
 
+
+    let finalAmount=totalAmountSelected;
+    let discountTotal = 0
+   
+    if(req.session && req.session.couponData ){
+      console.log( req.session.couponData);
+      finalAmount= finalAmount-req.session.couponData.discountedTotalAmount
+      discountTotal = req.session.couponData.discountedTotalAmount
+    }
+
+    console.log(finalAmount,discountTotal+'///////////////////////////////////');
+    
+
+ console.log('checkoutpost final ',finalAmount);
+
     let result;
 
-    if (payment_stored === "COD") {
+    if(payment_stored === "WALLET"){
+      // check the wallet balance first
+      const Userwallet = await wallet.findOne({userId:profile_details});
+      if (Userwallet.balance < totalAmountSelected) {
+        throw new Error("Insufficient Balance!");
+    } else {
+        result = await createNewOrder(
+            "WALLET",
+            selectedProducts,
+            profile_details,
+            OrderAddress,
+            finalAmount,
+            discountTotal,
+            res
+        );
+        if (result) {
+            result.paymentStatus = "success";
+            Userwallet.balance -= finalAmount;
+            
+            // Add transaction details
+            const transaction = {
+                type: 'purchase',
+                status: 'completed',
+                amount: finalAmount,
+                timestamp: Date.now()
+            };
+            Userwallet.transactions.push(transaction);
+    
+            await result.save();
+            await Userwallet.save();
+        }
+    } return res.status(200).json(result._id);
+    } else if (payment_stored === "COD") {
       result = await createNewOrder(
         "COD",
         selectedProducts,
         profile_details,
         OrderAddress,
-        totalAmountSelected,
+        finalAmount,
         res
       );
       if (result) {
@@ -892,7 +1043,8 @@ const postCheckout = async (req, res, next) => {
         selectedProducts,
         profile_details,
         OrderAddress,
-        totalAmountSelected,
+        finalAmount,
+        discountTotal,
         res
       );
       console.log(
@@ -901,18 +1053,12 @@ const postCheckout = async (req, res, next) => {
       console.log(result);
 
       const options = {
-        amount: totalAmountSelected * 100,
+        amount: finalAmount * 100,
         currency: "INR",
       };
 
       try {
         const order = await razorpayInstance.orders.create(options);
-       return res.json({ order, key_id: process.env.RAZORPAY_KEY_ID });
-        console.log(
-          "/////////////////////// RAZORPAY CREATED ORDER /////////////////////////"
-        );
-        console.log(order);
-
         const order_Details = await Order.findOne({ orderId: result.orderId });
 
         console.log("/////////////////////updTED IS////////////////");
@@ -923,9 +1069,8 @@ const postCheckout = async (req, res, next) => {
 
         await order_Details.save();
 
-        console.log("/////////////////////updated////////////////////");
-
-        console.log(order_Details);
+       return res.json({ order, key_id: process.env.RAZORPAY_KEY_ID });
+        
       } catch (error) {
         console.error(error);
         next(error);
@@ -937,12 +1082,15 @@ const postCheckout = async (req, res, next) => {
   }
 };
 
+
 const verify = async (req, res, next) => {
   try {
     const { payment_OrderId, payment_Signature, payment_Id } = req.body;
-
+;
     // Construct the message to be signed
     const body = `${payment_OrderId}|${payment_Id}`;
+
+    const orderId = payment_OrderId
 
     console.log("///////////////////////// Verify the data ///////////////////////");
     console.log("Message to be signed:", body);
@@ -958,23 +1106,36 @@ const verify = async (req, res, next) => {
 
     // Verify the signature
     if (generatedSignature === payment_Signature) {
+      
+      console.log("///////////////////////// new  Signature ///////////////////////"); 
+      console.log(payment_Signature,generatedSignature);
       try {
         // Find the order based on orderId
         const orderDataId = await Order.findOne({ orderId: payment_OrderId });
+        console.log(payment_OrderId,'////////////////////////lir');
 
+      
+
+        console.log(orderDataId,'//////////////////////////////// its working');
+        
+    
         // If order exists
         if (orderDataId) {
           // Update payment status to "success"
           await Order.updateOne({ orderId: payment_OrderId }, { paymentStatus: 'success' });
-
+          
           console.log("Payment verification successful. Payment is successful.");
-
+      
+          // Send response with status 200 and the order ID
           res.status(200).json(orderDataId._id);
           console.log("Order ID:", orderDataId._id);
-        } else {
+      } else {
+          // Update payment status to "failed" if the order retrieval fails
+          await Order.updateOne({ orderId: payment_OrderId }, { paymentStatus: 'failed' });
+      
           console.log("Order not found for the provided orderId.");
           res.status(404).send("Order not found");
-        }
+      }
       } catch (error) {
         console.error("Error occurred during payment verification:", error);
         res.status(500).send("Internal Server Error");
@@ -983,6 +1144,7 @@ const verify = async (req, res, next) => {
       console.log("Signature verification failed. Payload may have been tampered with.");
       res.status(400).send("Signature verification failed");
     }
+    
   } catch (error) {
     console.error("Error occurred:", error);
     next(error);
@@ -1069,36 +1231,54 @@ const addressDelete = async (req, res, next) => {
 
 const orderCancel = async (req, res, next) => {
   try {
-    const ProductModel = require("../model/add_product");
-
     const MyOrderId = req.params.Order;
     const OrderProduct = req.params.Product;
     const ProfileReason = req.body.reason;
 
-
-    const MyOrderData = await Order.findOne({ _id: MyOrderId });
-    let Index = MyOrderData.product.find(
+    const myOrderData = await Order.findOne({ _id: MyOrderId });
+    const index = myOrderData.product.find(
       (xx) => xx.productId.toString() === OrderProduct
     );
     const productData = await ProductModel.findOne({ _id: OrderProduct });
+    const walletData = await wallet.findOne({ userId: req.userId });
 
-  
+    // Check if order, product, and wallet data are valid
+    if (!myOrderData || !productData || !walletData) {
+      return res.status(404).send("Data not found");
+    }
 
-    Index.cancelOrder = "canceled";
-    Index.reason = ProfileReason;
-    productData.stock += Index.quantity;
+    // Update user cancelOrder status 
+    index.cancelOrder = "canceled";
+    index.reason = ProfileReason;
+    productData.stock += index.quantity;
+
+    // Calculate refund amount
+    const refundAmount = index.quantity * productData.price;
+
+    // Update wallet balance and add transaction record for refund
+    walletData.balance += refundAmount;
+    walletData.transactions.push({
+      type: "refund",
+      status: "completed",
+      amount: refundAmount,
+      timestamp: new Date()
+    });
+
+    // Save changes
     await productData.save();
+    await walletData.save();
 
-    MyOrderData.orderstatus = "canceled";
+    // Update order status to cancelled
+    myOrderData.orderstatus = "canceled";
+    await myOrderData.save();
 
-    await MyOrderData.save();
-
-    res.status(200).send("sucess");
+    res.status(200).send("success");
   } catch (error) {
     console.error(error);
     next(error);
   }
 };
+
 
 const selectProduct = async (req, res, next) => {
   try {
@@ -1121,7 +1301,82 @@ const selectProduct = async (req, res, next) => {
       console.error(error);
       next(error);
   }
+}; 
+
+
+
+const genrateInvoice = async (req, res) => {
+  try {
+    const orderId = req.query.orderId; // Extract orderId from query parameters
+
+    // Find the order by its ID and populate the product details
+    const order = await Order.findOne({ _id: orderId })
+    .populate('product.productId')
+    .sort({ "date": 1 });
+
+    if (!order) {
+      throw new Error('Order not found');
+    }
+
+    // Initialize PDF generation
+    const doc = new PDFDocument();
+    const filename = `invoice_${order.orderId}.pdf`;
+
+    // Set response headers for PDF file download
+    res.setHeader('Content-disposition', 'attachment; filename="' + filename + '"');
+    res.setHeader('Content-type', 'application/pdf');
+
+    // Populate PDF with invoice details
+    doc.fontSize(20).text('Invoice', { align: 'center' });
+    doc.moveDown(2);
+
+    doc.text(`Order ID: ${order.orderId}`);
+
+    doc.moveDown(1);
+
+    // Populate the product details in a table
+    const table = {
+      headers: ['Product Name', 'Price', 'Quantity', 'Total'],
+      rows: []
+    };
+
+    order.product.forEach((product) => {
+      table.rows.push([
+        product.productId.name,
+        `$${product.saleprice}`,
+        product.quantity.toString(),
+        `$${product.total}`
+      ]);
+    });
+
+    doc.moveDown(1);
+    doc.table(table, {
+      width: 500,
+      headerLines: 1,
+      align: 'center',
+    });
+
+    // Pipe the generated PDF data to the response stream
+    doc.pipe(res);
+    doc.end(); // End PDF generation
+
+  } catch (error) {
+    console.error('Error generating invoice:', error);
+    res.status(500).send('Error generating invoice');
+  }
 };
+
+
+const otpresend = (req,res)=>{
+
+
+
+}
+
+
+// Example usage: Pass the orderId to generate the invoice
+
+
 
 
 
@@ -1157,5 +1412,7 @@ module.exports = {
   orderCancel,
   selectProduct,
   verify,
-  checkoutAddress
+  checkoutAddress,
+  genrateInvoice,
+  otpresend
 };
