@@ -16,12 +16,11 @@ const cart = require("../model/cart");
 const Order = require("../model/order");
 const { addAbortSignal } = require("stream");
 const Razorpay = require("razorpay");
-const wallet = require('../model/wallet')
+const wallet = require("../model/wallet");
 const ProductModel = require("../model/add_product");
-const banner = require('../model/banner')
-const coupon = require('../model/coupon')
+const banner = require("../model/banner");
+const coupon = require("../model/coupon");
 const PDFDocument = require("pdfkit-table");
-
 
 //function to generate otp
 
@@ -36,18 +35,18 @@ const razorpayInstance = new Razorpay({
 
 //get
 
-  const main = async (req, res, next) => {
-    try {
-      const categories = await category.find({ isActive: true });
+const main = async (req, res, next) => {
+  try {
+    const categories = await category.find({ isActive: true });
 
-      const banner_Display = await banner.find({});
+    const banner_Display = await banner.find({});
 
-      res.render("index", { category: categories,banner_Display });
-    } catch (error) {
-      console.error(error);
-      next(error);
-    }
-  };
+    res.render("index", { category: categories, banner_Display });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
 
 const getLogin = (req, res, next) => {
   try {
@@ -55,7 +54,7 @@ const getLogin = (req, res, next) => {
     const userblocked = req.session.blocked;
     const passwordmessage = req.session.passwordmsg;
     const errMessage = req.session.err ? req.session.err : "";
-    req.session.err = '';
+    req.session.err = "";
     req.session.notfound = null;
     req.session.blocked = null;
     req.session.passwordmsg = null;
@@ -149,7 +148,6 @@ const productCart = async (req, res, next) => {
     const fullData = await cart
       .findOne({ user: userId })
       .populate("product.product");
-      
 
     res.render("pcart", { fullData, category: categories });
   } catch (error) {
@@ -160,17 +158,16 @@ const productCart = async (req, res, next) => {
 
 const account = async (req, res, next) => {
   try {
-  const categories = await category.find({ isActive: true });
+    const categories = await category.find({ isActive: true });
 
-  const ids = req.userId;
+    const ids = req.userId;
 
     const profileAddresses = await Myaddress.find({ parentuser: ids });
     const profileData = await mus.findOne({ _id: ids });
-    const walletAmount = await wallet.findOne({userId:ids});
-    const Myorders = await Order.find({userId:ids})
+    const walletAmount = await wallet.findOne({ userId: ids });
+    const Myorders = await Order.find({ userId: ids })
       .populate("product.productId")
       .sort({ createdAt: -1 });
-  
 
     res.render("dashboard", {
       category: categories,
@@ -178,10 +175,7 @@ const account = async (req, res, next) => {
       profileData,
       Myorders,
       walletAmount,
-      
     });
- 
-    
   } catch (error) {
     console.error(error);
     next(error);
@@ -213,43 +207,36 @@ const checkout = async (req, res, next) => {
   const pro = req.userId;
 
   try {
-
     const couponData = await coupon.find({ islist: true });
 
     const userAddress = await Myaddress.findOne({ parentuser: pro }).populate(
       "address"
     );
-    console.log(userAddress)
+    console.log(userAddress);
 
     const productorder = await cart
       .findOne({ user: pro })
       .populate("product.product");
 
- 
-
     const selectedProducts = productorder.product.filter(
       (xx) => xx.isSelected === true
     );
- 
 
     if (selectedProducts.length === 0) {
       return res.redirect("/cart");
     }
 
     let couponDetails = null;
-     if(req.session && req.session.couponData){
+    if (req.session && req.session.couponData) {
+      couponDetails = req.session.couponData;
+    }
 
-      couponDetails=req.session.couponData;
-
-     }
-    
     res.render("checkout", {
       userAddress,
       productorder,
       couponData,
       couponDetails,
       productorderprice: { product: selectedProducts },
-     
     });
   } catch (error) {
     console.error(error);
@@ -271,8 +258,6 @@ const orderSucess = async (req, res, next) => {
     const loooo = req.params.oid;
 
     console.log("//////////////////////////orde coming ///////");
-
- 
 
     const categories = await category.find({ isActive: true });
     const orderDetails = await Order.findOne({ _id: loooo }).populate(
@@ -346,134 +331,151 @@ const postLogin = async (req, res, next) => {
   }
 };
 
-  const postRegister = async (req, res, next) => {
-    const { sfirstname, slastname, semail, spassword, sphonenumber, sconfirm_password } = req.body;
-    console.log({ sfirstname, slastname, semail, spassword, sphonenumber, sconfirm_password })
+const postRegister = async (req, res, next) => {
+  const {
+    sfirstname,
+    slastname,
+    semail,
+    spassword,
+    sphonenumber,
+    sconfirm_password,
+  } = req.body;
+  console.log({
+    sfirstname,
+    slastname,
+    semail,
+    spassword,
+    sphonenumber,
+    sconfirm_password,
+  });
 
-    // Check if any of the required fields are empty
-    if (!sfirstname || !slastname || !semail || !spassword || !sphonenumber || !sconfirm_password) {
-      req.session.errorMessage = "Please fill all the fields"; 
-      return res.redirect("/signup"); 
+  // Check if any of the required fields are empty
+  if (
+    !sfirstname ||
+    !slastname ||
+    !semail ||
+    !spassword ||
+    !sphonenumber ||
+    !sconfirm_password
+  ) {
+    req.session.errorMessage = "Please fill all the fields";
+    return res.redirect("/signup");
+  }
+
+  const hashedPassword = await bcrypt.hash(spassword, 10);
+
+  if (spassword.length < 10 || spassword !== sconfirm_password) {
+    req.session.userpassword =
+      "Password must be at least 10 characters long and match the confirmation.";
+    return res.redirect("/signup");
+  }
+
+  console.log("njn vannu password ");
+
+  try {
+    const existingUser = await mus.findOne({
+      $or: [{ username: sfirstname }, { email: semail }],
+    });
+
+    if (existingUser) {
+      req.session.alreadyuse = "User already has an account.";
+      return res.redirect("/signup"); // Redirect to the signup page or handle the response accordingly
     }
 
-    const hashedPassword = await bcrypt.hash(spassword, 10);
+    let userdata = await mus.create({
+      firstname: sfirstname,
+      lastname: slastname,
+      email: semail,
+      phonenumber: sphonenumber,
+      password: hashedPassword,
+    });
 
-    if (spassword.length < 10 || spassword !== sconfirm_password) {
-      req.session.userpassword = "Password must be at least 10 characters long and match the confirmation.";
-      return res.redirect("/signup");
-    }
+    req.session.maindata = userdata;
 
-    console.log('njn vannu password ');
+    console.log("njn vannu email pova");
 
-    try {
-      const existingUser = await mus.findOne({
-        $or: [{ username: sfirstname }, { email: semail }],
+    async function sendOTPEmail(otp) {
+      const transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASSWORD,
+        },
       });
 
-      if (existingUser) {
-        req.session.alreadyuse = "User already has an account.";
-        return res.redirect("/signup"); // Redirect to the signup page or handle the response accordingly
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: req.session.maindata.email,
+        subject: "This is your OTP",
+        text: `Your OTP is ${otp}`,
+      };
+
+      req.session.verify = otp;
+      console.log(otp);
+      console.log("njn vannu email ayachu");
+
+      try {
+        const info = await transporter.sendMail(mailOptions);
+        console.log("Email sent:", info.response);
+
+        // Create user's address and cart
+        await createAddress(req.session.maindata._id);
+        await createCart(req.session.maindata._id);
+        await createWallet(req.session.maindata._id);
+
+        res.redirect("/otpverification");
+      } catch (error) {
+        console.error("Error sending mail", error);
       }
-
-      let userdata = await mus.create({
-        firstname: sfirstname,
-        lastname: slastname,
-        email: semail,
-        phonenumber: sphonenumber,
-        password: hashedPassword,
-      });
-
-      req.session.maindata = userdata;
-
-      console.log('njn vannu email pova');
-
-      async function sendOTPEmail(otp) {
-        const transporter = nodemailer.createTransport({
-          service: "Gmail",
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD,
-          },
-        });
-
-        const mailOptions = {
-          from: process.env.EMAIL_USER,
-          to: req.session.maindata.email,
-          subject: "This is your OTP",
-          text: `Your OTP is ${otp}`,
-        };
-
-        req.session.verify = otp;
-        console.log(otp);
-        console.log('njn vannu email ayachu');
-
-        try {
-          const info = await transporter.sendMail(mailOptions);
-          console.log("Email sent:", info.response);
-
-          // Create user's address and cart
-          await createAddress(req.session.maindata._id);
-          await createCart(req.session.maindata._id);
-          await createWallet(req.session.maindata._id);
-
-          res.redirect("/otpverification");
-        } catch (error) {
-          console.error("Error sending mail", error);
-        }
-      }
-
-      const otp = generatorOTP();
-     sendOTPEmail(otp);
-    } catch (error) {
-      console.error(error);
-      next(error);
     }
-  };
 
-  const otpresend = async (req,res)=>{
+    const otp = generatorOTP();
+    sendOTPEmail(otp);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
 
-  try{
+const otpresend = async (req, res) => {
+  try {
     const newOtp = generatorOTP();
 
     await sendOTPEmail(newOtp);
 
-     // Update the stored OTP in the session
-     req.session.verify = newOtp;
+    // Update the stored OTP in the session
+    req.session.verify = newOtp;
 
-     console.log( 'ResendOtp',newOtp);
-     
-     res.redirect("/otpverification");
+    console.log("ResendOtp", newOtp);
 
-  } catch(error){
+    res.redirect("/otpverification");
+  } catch (error) {
     console.error(error);
     next(error);
   }
-}
+};
 
+const userPostOtp = async (req, res, next) => {
+  console.log("otp verfiaction ....................");
+  const storedOtp = req.session.verify;
+  const Enteredotp = req.body.otp;
+  console.log(storedOtp, Enteredotp);
+  try {
+    if (storedOtp === Number(Enteredotp)) {
+      const update = await mus.updateOne(
+        { email: req.session.maindata.email },
+        { $set: { verified: true } }
+      );
 
-
-
-  const userPostOtp = async (req, res, next) => {
-    console.log("otp verfiaction ....................");
-    const storedOtp = req.session.verify;
-    const Enteredotp = req.body.otp;
-    console.log(storedOtp, Enteredotp);
-    try {
-      if (storedOtp === Number(Enteredotp)) {
-        const update = await mus.updateOne(
-          { email: req.session.maindata.email },
-          { $set: { verified: true } }
-        );
-
-        res.status(200).json({ success: true });
-      } else {
-        res.send(error);
-      }
-    } catch (error) {
-      console.error(error);
-      next(error);
+      res.status(200).json({ success: true });
+    } else {
+      res.send(error);
     }
-  };
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+};
 
 const createAddress = async (userId) => {
   try {
@@ -797,12 +799,11 @@ const cartQty = async (req, res, next) => {
   const { productId, quantity } = req.body;
 
   try {
-
     const productDetail = await product.findOne({ _id: productId });
 
     // Check if the requested quantity exceeds the available stock
     if (quantity > productDetail.stock) {
-      return res.status(400).json({ success: false, message: 'Out of stock' });
+      return res.status(400).json({ success: false, message: "Out of stock" });
     }
 
     const updatedCart = await cart.updateOne(
@@ -812,6 +813,7 @@ const cartQty = async (req, res, next) => {
     );
     // Recalculate and update the totalamount for the entire cart
     const userCart = await cart.findOne({ user: req.userId });
+  
 
     let total = 0;
 
@@ -820,9 +822,12 @@ const cartQty = async (req, res, next) => {
         _id: productsData.product,
       });
 
-      total += productDetail.price * productsData.quantity;
-    }
+
+      const result =  productDetail.price * productsData.quantity
+      total += result;
+    
     userCart.totalamount = total;
+  }
 
     await userCart.save();
     res.status(200).json({ sucess: true });
@@ -842,13 +847,14 @@ const createNewOrder = async (
   res
 ) => {
   try {
-
-    console.log( paymentMethod,
+    console.log(
+      paymentMethod,
       selectedProducts,
       profile_details,
       OrderAddress,
       totalAmountSelected,
-      discountTotal,);
+      discountTotal
+    );
 
     const newOrder = {
       userId: profile_details,
@@ -882,14 +888,13 @@ const createNewOrder = async (
 
     let savedOrder;
 
-    if (paymentMethod === 'razorpay') {
+    if (paymentMethod === "razorpay") {
       // If payment method is razorpay, store data to session
       req.session.orderCreated = newOrder;
     } else {
       // Otherwise, save the new order to MongoDB
       savedOrder = await Order.insertMany([newOrder]);
     }
-
 
     for (const item of selectedProducts) {
       let stock = item.product.stock - item.quantity;
@@ -916,18 +921,6 @@ const createNewOrder = async (
       console.log("Order stored in session successfully.");
     }
 
-    // Remove ordered products from the user's cart
-    const updatedCart = await cart.findOneAndUpdate(
-      { user: profile_details },
-      { 
-          $pull: { product: { isSelected: true } },
-          $unset: { totalamount: "" } 
-      },
-      { new: true }
-  );
-  
-
-
     console.log("_____________________");
     console.log(Order);
     console.log("_____________________");
@@ -939,11 +932,20 @@ const createNewOrder = async (
   }
 };
 
-const checkoutAddress = async (req,res,next) =>{
-  try{
-    const { name, phone, pin, city, state, locality, address, landmark, alternative } = req.body  ;
-   
-    
+const checkoutAddress = async (req, res, next) => {
+  try {
+    const {
+      name,
+      phone,
+      pin,
+      city,
+      state,
+      locality,
+      address,
+      landmark,
+      alternative,
+    } = req.body;
+
     const newAddressData = {
       name: name,
       phoneNumber: phone,
@@ -956,20 +958,19 @@ const checkoutAddress = async (req,res,next) =>{
       alternativePhoneNumber: alternative,
     };
 
-   const userId = req.userId
+    const userId = req.userId;
 
-    const findUser = await Myaddress.findOne({parentuser:userId})
+    const findUser = await Myaddress.findOne({ parentuser: userId });
     findUser.address.push(newAddressData);
 
     await findUser.save();
-    
-    res.redirect('/checkout')
 
-  }catch(error){
+    res.redirect("/checkout");
+  } catch (error) {
     console.error(error);
-    next(error)
+    next(error);
   }
-}
+};
 
 const postCheckout = async (req, res, next) => {
   try {
@@ -977,25 +978,21 @@ const postCheckout = async (req, res, next) => {
     const payment_stored = req.body.payment;
     const profile_details = req.userId;
 
-  console.log(payment_stored );
-
-
-
+    console.log(payment_stored);
 
     const profile = await Myaddress.findOne({ parentuser: profile_details });
     const cartproducts = await cart
       .findOne({ user: profile_details })
       .populate("product.product");
 
-     
-
-
     const selectedProducts = cartproducts.product.filter(
       (xx) => xx.isSelected === true
     );
-    
+
     if (selectedProducts.length === 0) {
-      return res.status(400).json({ error: "No products selected for checkout" });
+      return res
+        .status(400)
+        .json({ error: "No products selected for checkout" });
     }
 
     const addressdetail = profile.address.filter(
@@ -1007,55 +1004,67 @@ const postCheckout = async (req, res, next) => {
       return total + item.quantity * item.product.price;
     }, 0);
 
+    let finalAmount = totalAmountSelected;
+    let discountTotal = 0;
 
-    let finalAmount=totalAmountSelected;
-    let discountTotal = 0
-   
-    if(req.session && req.session.couponData ){
-      console.log( req.session.couponData);
-      finalAmount= finalAmount-req.session.couponData.discountedTotalAmount
-      discountTotal = req.session.couponData.discountedTotalAmount
+    if (req.session && req.session.couponData) {
+      console.log(req.session.couponData);
+      finalAmount = finalAmount - req.session.couponData.discountedTotalAmount;
+      discountTotal = req.session.couponData.discountedTotalAmount;
     }
 
-    console.log(finalAmount,discountTotal+'///////////////////////////////////');
-    
+    console.log(
+      finalAmount,
+      discountTotal + "///////////////////////////////////"
+    );
 
- console.log('checkoutpost final ',finalAmount);
+    console.log("checkoutpost final ", finalAmount);
 
     let result;
 
-    if(payment_stored === "WALLET"){
+    if (payment_stored === "WALLET") {
       // check the wallet balance first
-      const Userwallet = await wallet.findOne({userId:profile_details});
+      const Userwallet = await wallet.findOne({ userId: profile_details });
       if (Userwallet.balance < totalAmountSelected) {
         throw new Error("Insufficient Balance!");
-    } else {
+      } else {
         result = await createNewOrder(
-            "WALLET",
-            selectedProducts,
-            profile_details,
-            OrderAddress,
-            finalAmount,
-            discountTotal,
-            res
+          "WALLET",
+          selectedProducts,
+          profile_details,
+          OrderAddress,
+          finalAmount,
+          discountTotal,
+          res
         );
         if (result) {
-            result.paymentStatus = "success";
-            Userwallet.balance -= finalAmount;
-            
-            // Add transaction details
-            const transaction = {
-                type: 'purchase',
-                status: 'completed',
-                amount: finalAmount,
-                timestamp: Date.now()
-            };
-            Userwallet.transactions.push(transaction);
-    
-            await result.save();
-            await Userwallet.save();
+          result.paymentStatus = "success";
+          Userwallet.balance -= finalAmount;
+
+          // Remove ordered products from the user's cart
+          const updatedCart = await cart.findOneAndUpdate(
+            { user: profile_details },
+            {
+              $pull: { product: { isSelected: true } },
+              $unset: { totalamount: "" },
+            },
+            { new: true }
+          );
+
+          // Add transaction details
+          const transaction = {
+            type: "purchase",
+            status: "completed",
+            amount: finalAmount,
+            timestamp: Date.now(),
+          };
+          Userwallet.transactions.push(transaction);
+
+          await result.save();
+          await Userwallet.save();
         }
-    } return res.status(200).json(result._id);
+      }
+      return res.status(200).json(result._id);
     } else if (payment_stored === "COD") {
       result = await createNewOrder(
         "COD",
@@ -1069,6 +1078,15 @@ const postCheckout = async (req, res, next) => {
         result.paymentStatus = "success";
         await result.save();
       }
+      // Remove ordered products from the user's cart
+      const updatedCart = await cart.findOneAndUpdate(
+        { user: profile_details },
+        {
+          $pull: { product: { isSelected: true } },
+          $unset: { totalamount: "" },
+        },
+        { new: true }
+      );
       console.log(
         "///////////////////////////////////COD CREATED  ////////////////////////////////"
       );
@@ -1096,22 +1114,21 @@ const postCheckout = async (req, res, next) => {
 
       try {
         const order = await razorpayInstance.orders.create(options);
-        const order_Details = await Order.findOne({ orderId: result.orderId }).populate('product.productId')
+        const order_Details = await Order.findOne({
+          orderId: result.orderId,
+        }).populate("product.productId");
 
         console.log("/////////////////////updTED IS////////////////");
-
 
         console.log(order_Details);
 
         order_Details.orderId = order.id;
-        order_Details.orderstatus = 'failed'
-        order_Details.paymentStatus = 'failed'
-
+        order_Details.orderstatus = "failed";
+        order_Details.paymentStatus = "failed";
 
         await order_Details.save();
 
-       return res.json({ order, key_id: process.env.RAZORPAY_KEY_ID });
-        
+        return res.json({ order, key_id: process.env.RAZORPAY_KEY_ID });
       } catch (error) {
         console.error(error);
         next(error);
@@ -1123,17 +1140,17 @@ const postCheckout = async (req, res, next) => {
   }
 };
 
-
 const verify = async (req, res, next) => {
   try {
     const { payment_OrderId, payment_Signature, payment_Id } = req.body;
-;
     // Construct the message to be signed
     const body = `${payment_OrderId}|${payment_Id}`;
 
-    const orderId = payment_OrderId
+    const orderId = payment_OrderId;
 
-    console.log("///////////////////////// Verify the data ///////////////////////");
+    console.log(
+      "///////////////////////// Verify the data ///////////////////////"
+    );
     console.log("Message to be signed:", body);
 
     // Generate signature
@@ -1147,29 +1164,35 @@ const verify = async (req, res, next) => {
 
     // Verify the signature
     if (generatedSignature === payment_Signature) {
-      
-      console.log("///////////////////////// new  Signature ///////////////////////"); 
-      console.log(payment_Signature,generatedSignature);
+      console.log(
+        "///////////////////////// new  Signature ///////////////////////"
+      );
+      console.log(payment_Signature, generatedSignature);
       try {
         // Find the order based on orderId
         const orderDataId = await Order.findOne({ orderId: payment_OrderId });
 
+        console.log(payment_OrderId, "////////////////////////lir");
 
-        console.log(payment_OrderId,'////////////////////////lir');
+        console.log(
+          orderDataId,
+          "//////////////////////////////// its working"
+        );
 
-      
-
-        console.log(orderDataId,'//////////////////////////////// its working');
-        
-    
         // If order exists
-   if (orderDataId) {
-          console.log(' njn vannu order sucess ayi 1 ');
+        if (orderDataId) {
+          console.log(" njn vannu order sucess ayi 1 ");
           try {
             // Update payment status to "success"
-            await Order.updateOne({ orderId: payment_OrderId }, { $set: { paymentStatus: 'success', orderstatus: 'pending' }});
+            await Order.updateOne(
+              { orderId: payment_OrderId },
+              { $set: { paymentStatus: "success", orderstatus: "pending" } }
+            );
+            
 
-            console.log("Payment verification successful. Payment is successful.");
+            console.log(
+              "Payment verification successful. Payment is successful."
+            );
 
             // Retrieve the order details
             const newOrder = await Order.findOne({ orderId: payment_OrderId });
@@ -1179,17 +1202,31 @@ const verify = async (req, res, next) => {
 
             // Send response with status 200 and the order ID
             res.status(200).json(newOrder._id);
+
+            const profile_details = req.userId;
+
+            const updatedCart = await cart.findOneAndUpdate(
+              { user: profile_details },
+              {
+                $pull: { product: { isSelected: true } },
+                $unset: { totalamount: "" },
+              },
+              { new: true }
+            );
             console.log("Order ID:", newOrder._id);
           } catch (error) {
             console.error("Error updating payment status:", error);
             res.status(500).send("Internal Server Error");
           }
         } else {
-          console.log(' njn vannu order sucess ayi 2 ');
+          console.log(" njn vannu order sucess ayi 2 ");
           try {
             // Update payment status to "failed" if the order retrieval fails
-            await Order.updateOne({ orderId: payment_OrderId }, { $set: { orderstatus: 'failed' }});
-            console.log(' njn vannu order sucess ayi 3'); 
+            await Order.updateOne(
+              { orderId: payment_OrderId },
+              { $set: { orderstatus: "failed" } }
+            );
+            console.log(" njn vannu order sucess ayi 3");
             console.log("Order not found for the provided orderId.");
             res.status(404).send("Order not found");
           } catch (error) {
@@ -1202,10 +1239,11 @@ const verify = async (req, res, next) => {
         res.status(500).send("Internal Server Error");
       }
     } else {
-      console.log("Signature verification failed. Payload may have been tampered with.");
+      console.log(
+        "Signature verification failed. Payload may have been tampered with."
+      );
       res.status(400).send("Signature verification failed");
     }
-    
   } catch (error) {
     console.error("Error occurred:", error);
     next(error);
@@ -1213,7 +1251,6 @@ const verify = async (req, res, next) => {
 };
 
 module.exports = verify;
-
 
 const postEditAddress = async (req, res, next) => {
   const editaddressId = req.params.addressid;
@@ -1308,7 +1345,7 @@ const orderCancel = async (req, res, next) => {
       return res.status(404).send("Data not found");
     }
 
-    // Update user cancelOrder status 
+    // Update user cancelOrder status
     index.cancelOrder = "canceled";
     index.reason = ProfileReason;
     productData.stock += index.quantity;
@@ -1322,7 +1359,7 @@ const orderCancel = async (req, res, next) => {
       type: "refund",
       status: "completed",
       amount: refundAmount,
-      timestamp: new Date()
+      timestamp: new Date(),
     });
 
     // Save changes
@@ -1340,45 +1377,42 @@ const orderCancel = async (req, res, next) => {
   }
 };
 
-
 const selectProduct = async (req, res, next) => {
   try {
-      const productSelected = req.params.selectedProduct_Id;
-      const profileId = req.userId;
+    const productSelected = req.params.selectedProduct_Id;
+    const profileId = req.userId;
 
-      const profileFound = await cart.findOne({ user: profileId });
+    const profileFound = await cart.findOne({ user: profileId });
 
-      let cartSelected = profileFound.product.find(
-          (xx) => xx.product.toString() === productSelected
-      );
+    let cartSelected = profileFound.product.find(
+      (xx) => xx.product.toString() === productSelected
+    );
 
-      // Update isSelected based on isChecked sent from frontend
-      cartSelected.isSelected = req.body.isChecked;
+    // Update isSelected based on isChecked sent from frontend
+    cartSelected.isSelected = req.body.isChecked;
 
-      await profileFound.save();
+    await profileFound.save();
 
-      res.status(200).send("success");
-  } catch (error) { 
-      console.error(error);
-      next(error);
+    res.status(200).send("success");
+  } catch (error) {
+    console.error(error);
+    next(error);
   }
-}; 
-
-
+};
 
 const genrateInvoice = async (req, res) => {
   try {
     const orderId = req.query.orderId;
-    
-    console.log(orderId);// Extract orderId from query parameters
+
+    console.log(orderId); // Extract orderId from query parameters
 
     // Find the order by its ID and populate the product details
     const order = await Order.findOne({ _id: orderId })
-    .populate('product.productId')
-    .sort({ "date": 1 });
+      .populate("product.productId")
+      .sort({ date: 1 });
 
     if (!order) {
-      throw new Error('Order not found');
+      throw new Error("Order not found");
     }
 
     // Initialize PDF generation
@@ -1386,11 +1420,14 @@ const genrateInvoice = async (req, res) => {
     const filename = `invoice_${order.orderId}.pdf`;
 
     // Set response headers for PDF file download
-    res.setHeader('Content-disposition', 'attachment; filename="' + filename + '"');
-    res.setHeader('Content-type', 'application/pdf');
+    res.setHeader(
+      "Content-disposition",
+      'attachment; filename="' + filename + '"'
+    );
+    res.setHeader("Content-type", "application/pdf");
 
     // Populate PDF with invoice details
-    doc.fontSize(20).text('Invoice', { align: 'center' });
+    doc.fontSize(20).text("Invoice", { align: "center" });
     doc.moveDown(2);
 
     doc.text(`Order ID: ${order.orderId}`);
@@ -1399,8 +1436,8 @@ const genrateInvoice = async (req, res) => {
 
     // Populate the product details in a table
     const table = {
-      headers: ['Product Name', 'Price', 'Quantity', 'Total'],
-      rows: []
+      headers: ["Product Name", "Price", "Quantity", "Total"],
+      rows: [],
     };
 
     order.product.forEach((product) => {
@@ -1408,7 +1445,7 @@ const genrateInvoice = async (req, res) => {
         product.productId.name,
         `$${product.saleprice}`,
         product.quantity.toString(),
-        `$${product.total}`
+        `$${product.total}`,
       ]);
     });
 
@@ -1416,26 +1453,19 @@ const genrateInvoice = async (req, res) => {
     doc.table(table, {
       width: 500,
       headerLines: 1,
-      align: 'center',
+      align: "center",
     });
 
     // Pipe the generated PDF data to the response stream
     doc.pipe(res);
     doc.end(); // End PDF generation
-
   } catch (error) {
-    console.error('Error generating invoice:', error);
-    res.status(500).send('Error generating invoice');
+    console.error("Error generating invoice:", error);
+    res.status(500).send("Error generating invoice");
   }
 };
 
-
-
 // Example usage: Pass the orderId to generate the invoice
-
-
-
-
 
 module.exports = {
   main,
@@ -1471,5 +1501,5 @@ module.exports = {
   verify,
   checkoutAddress,
   genrateInvoice,
-  otpresend
+  otpresend,
 };
