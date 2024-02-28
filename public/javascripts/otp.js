@@ -294,28 +294,31 @@ async function blockuser(userId) {
   }
 }
 
-async function getProductData(prodId) {
+  async function getProductData(prodId) {
+    try {
+      const response = await fetch(`/product/${prodId}`, {
+        method: 'POST', 
+      });
+      // Show SweetAlert to notify the user   
+      Swal.fire({
+        icon: 'success',
+        title: 'Added to Cart!',
+        text: 'The product has been successfully added to your cart.'
+      });
 
- 
-  try {
-    const response = await fetch(`/product/${prodId}`, {
-      method: 'POST', 
-    });
+      if (response.ok) {
+        const productData = await response.json();
+        console.log('Product Data:', productData);
 
-    if (response.ok) {
-      const productData = await response.json();
-      console.log('Product Data:', productData);
-
-
-    } else {
-      const errorResponse = await response.json().catch(() => null);
-      console.error('Error response:', errorResponse || 'Unable to parse error response');
-      throw new Error(`HTTP-Error! status: ${response.status}`);
+      } else {
+        const errorResponse = await response.json().catch(() => null);
+        console.error('Error response:', errorResponse || 'Unable to parse error response');
+        throw new Error(`HTTP-Error! status: ${response.status}`);
+      }
+    } catch (error) {
+      console.error('Caught an exception:', error);
     }
-  } catch (error) {
-    console.error('Caught an exception:', error);
   }
-};
 
 //delete product 
 

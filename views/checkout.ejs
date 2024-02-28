@@ -96,17 +96,17 @@
                     required
                     id="checkout-discount-input"
                   />
-                  <label for="checkout-discount-input" class="text-truncate"
+                  <!-- <label for="checkout-discount-input" class="text-truncate"
                     >Have a coupon?
                     <span>Click here to enter your code</span></label
-                  >
+                  > -->
                 </form>
               </div>
               <!-- End .checkout-discount -->
               <form action="#">
                 <div class="row">
                   <div class="col-lg-9" style="font-size: medium;" >
-                    <h2 class="checkout-title" ><b>Address</b></h2> 
+                    <h2 class="checkout-title" ><b>Select Address</b></h2> 
                     <!-- End .checkout-title -->
                     <div class="card" >
                     
@@ -630,7 +630,7 @@
                   })
                   .catch((error) => {
                       console.error("Error placing order:", error);
-                      Swal.fire("Error", "There was an error placing your order. Please try again.", "error");
+                      Swal.fire("Error", "There was an error placing your order. Please try again or please select the address .", "error");
                   });
               }
           });

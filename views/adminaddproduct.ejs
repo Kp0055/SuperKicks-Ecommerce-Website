@@ -434,16 +434,17 @@
         
             <!-- Multiple Upload -->
             <div class="card">
-                <div class="card-header">
-                    <h4>Multiple Upload</h4>
-                </div>
-                <div class="card-body">
-                    <div class="fallback mt-5">
-                        <input name="image" type="file" multiple id="image" accept="image/*" />
-                        <span id="fileError" style="color: red;"></span>
-                    </div>
-                </div>
-            </div>
+              <div class="card-header">
+                  <h4>Multiple Upload</h4>
+              </div>
+              <div class="card-body">
+                  <div class="fallback mt-5">
+                      <input name="image" type="file" multiple id="image" accept="image/*" />
+                      <span id="fileError" style="color: red;"></span>
+                  </div>
+                  <div id="imagePreview" class="mt-3"></div>
+              </div>
+          </div>
                 <button type="submit" class="btn btn-primary">Submit</button>
               </div>
             </div>
@@ -470,6 +471,52 @@
   <!-- Custom JS File -->
   <script src="/adminassets/js/custom.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+<script>
+  // Function to display uploaded images
+function previewImages() {
+    var preview = document.querySelector('#imagePreview');
+    var files = document.querySelector('input[type=file]').files;
+
+    function readAndPreview(file) {
+        // Make sure `file` is a valid image file
+        if (/\.(jpe?g|png|gif)$/i.test(file.name)) {
+            var reader = new FileReader();
+
+            reader.addEventListener('load', function () {
+                var imageElement = document.createElement('img');
+                imageElement.src = this.result;
+
+                // Set image width and size
+                imageElement.style.maxWidth = '200px'; // Adjust the width as per your requirement
+                imageElement.style.maxHeight = '200px'; // Adjust the height as per your requirement
+                imageElement.style.marginRight = '10px'; // Adjust the margin as per your requirement
+
+                // Create remove button
+                var removeButton = document.createElement('button');
+                removeButton.textContent = 'Remove';
+                removeButton.addEventListener('click', function() {
+                    preview.removeChild(imageElement); // Remove image
+                    preview.removeChild(removeButton); // Remove button
+                });
+
+                preview.appendChild(imageElement);
+                preview.appendChild(removeButton);
+            });
+
+            reader.readAsDataURL(file);
+        }
+    }
+
+    if (files) {
+        [].forEach.call(files, readAndPreview);
+    }
+}
+
+// Attach event listener to the file input
+document.querySelector('input[type=file]').addEventListener('change', previewImages);
+
+</script>
 
   <script>
 

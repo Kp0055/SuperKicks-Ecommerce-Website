@@ -346,91 +346,135 @@ const postLogin = async (req, res, next) => {
   }
 };
 
-const postRegister = async (req, res, next) => {
-  const { sfirstname, slastname, semail, spassword, sphonenumber, sconfirm_password } = req.body;
-  console.log({ sfirstname, slastname, semail, spassword, sphonenumber, sconfirm_password })
+  const postRegister = async (req, res, next) => {
+    const { sfirstname, slastname, semail, spassword, sphonenumber, sconfirm_password } = req.body;
+    console.log({ sfirstname, slastname, semail, spassword, sphonenumber, sconfirm_password })
 
-  // Check if any of the required fields are empty
-  if (!sfirstname || !slastname || !semail || !spassword || !sphonenumber || !sconfirm_password) {
-    req.session.errorMessage = "Please fill all the fields"; 
-    return res.redirect("/signup"); 
-  }
-
-  const hashedPassword = await bcrypt.hash(spassword, 10);
-
-  if (spassword.length < 10 || spassword !== sconfirm_password) {
-    req.session.userpassword = "Password must be at least 10 characters long and match the confirmation.";
-    return res.redirect("/signup");
-  }
-
-  console.log('njn vannu password ');
-
-  try {
-    const existingUser = await mus.findOne({
-      $or: [{ username: sfirstname }, { email: semail }],
-    });
-
-    if (existingUser) {
-      req.session.alreadyuse = "User already has an account.";
-      return res.redirect("/signup"); // Redirect to the signup page or handle the response accordingly
+    // Check if any of the required fields are empty
+    if (!sfirstname || !slastname || !semail || !spassword || !sphonenumber || !sconfirm_password) {
+      req.session.errorMessage = "Please fill all the fields"; 
+      return res.redirect("/signup"); 
     }
 
-    let userdata = await mus.create({
-      firstname: sfirstname,
-      lastname: slastname,
-      email: semail,
-      phonenumber: sphonenumber,
-      password: hashedPassword,
-    });
+    const hashedPassword = await bcrypt.hash(spassword, 10);
 
-    req.session.maindata = userdata;
+    if (spassword.length < 10 || spassword !== sconfirm_password) {
+      req.session.userpassword = "Password must be at least 10 characters long and match the confirmation.";
+      return res.redirect("/signup");
+    }
 
-    console.log('njn vannu email pova');
+    console.log('njn vannu password ');
 
-    async function sendOTPEmail(otp) {
-      const transporter = nodemailer.createTransport({
-        service: "Gmail",
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASSWORD,
-        },
+    try {
+      const existingUser = await mus.findOne({
+        $or: [{ username: sfirstname }, { email: semail }],
       });
 
-      const mailOptions = {
-        from: process.env.EMAIL_USER,
-        to: req.session.maindata.email,
-        subject: "This is your OTP",
-        text: `Your OTP is ${otp}`,
-      };
-
-      req.session.verify = otp;
-      console.log(otp);
-      console.log('njn vannu email ayachu');
-
-      try {
-        const info = await transporter.sendMail(mailOptions);
-        console.log("Email sent:", info.response);
-
-        // Create user's address and cart
-        await createAddress(req.session.maindata._id);
-        await createCart(req.session.maindata._id);
-        await createWallet(req.session.maindata._id);
-
-        res.redirect("/otpverification");
-      } catch (error) {
-        console.error("Error sending mail", error);
+      if (existingUser) {
+        req.session.alreadyuse = "User already has an account.";
+        return res.redirect("/signup"); // Redirect to the signup page or handle the response accordingly
       }
-    }
 
-    const otp = generatorOTP();
-    sendOTPEmail(otp);
-  } catch (error) {
+      let userdata = await mus.create({
+        firstname: sfirstname,
+        lastname: slastname,
+        email: semail,
+        phonenumber: sphonenumber,
+        password: hashedPassword,
+      });
+
+      req.session.maindata = userdata;
+
+      console.log('njn vannu email pova');
+
+      async function sendOTPEmail(otp) {
+        const transporter = nodemailer.createTransport({
+          service: "Gmail",
+          auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASSWORD,
+          },
+        });
+
+        const mailOptions = {
+          from: process.env.EMAIL_USER,
+          to: req.session.maindata.email,
+          subject: "This is your OTP",
+          text: `Your OTP is ${otp}`,
+        };
+
+        req.session.verify = otp;
+        console.log(otp);
+        console.log('njn vannu email ayachu');
+
+        try {
+          const info = await transporter.sendMail(mailOptions);
+          console.log("Email sent:", info.response);
+
+          // Create user's address and cart
+          await createAddress(req.session.maindata._id);
+          await createCart(req.session.maindata._id);
+          await createWallet(req.session.maindata._id);
+
+          res.redirect("/otpverification");
+        } catch (error) {
+          console.error("Error sending mail", error);
+        }
+      }
+
+      const otp = generatorOTP();
+     sendOTPEmail(otp);
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  };
+
+  const otpresend = async (req,res)=>{
+
+  try{
+    const newOtp = generatorOTP();
+
+    await sendOTPEmail(newOtp);
+
+     // Update the stored OTP in the session
+     req.session.verify = newOtp;
+
+     console.log( 'ResendOtp',newOtp);
+     
+     res.redirect("/otpverification");
+
+  } catch(error){
     console.error(error);
     next(error);
   }
-};
+}
 
-// Function to create user's address
+
+
+
+  const userPostOtp = async (req, res, next) => {
+    console.log("otp verfiaction ....................");
+    const storedOtp = req.session.verify;
+    const Enteredotp = req.body.otp;
+    console.log(storedOtp, Enteredotp);
+    try {
+      if (storedOtp === Number(Enteredotp)) {
+        const update = await mus.updateOne(
+          { email: req.session.maindata.email },
+          { $set: { verified: true } }
+        );
+
+        res.status(200).json({ success: true });
+      } else {
+        res.send(error);
+      }
+    } catch (error) {
+      console.error(error);
+      next(error);
+    }
+  };
+
 const createAddress = async (userId) => {
   try {
     // Create the address for the user using the userId
@@ -461,28 +505,6 @@ const createWallet = async (userId) => {
   } catch (error) {
     console.error("Error creating wallet:", error);
     throw error;
-  }
-};
-
-const userPostOtp = async (req, res, next) => {
-  console.log("otp verfiaction ....................");
-  const storedOtp = req.session.verify;
-  const Enteredotp = req.body.otp;
-  console.log(storedOtp, Enteredotp);
-  try {
-    if (storedOtp === Number(Enteredotp)) {
-      const update = await mus.updateOne(
-        { email: req.session.maindata.email },
-        { $set: { verified: true } }
-      );
-
-      res.status(200).json({ success: true });
-    } else {
-      res.send(error);
-    }
-  } catch (error) {
-    console.error(error);
-    next(error);
   }
 };
 
@@ -858,9 +880,16 @@ const createNewOrder = async (
       });
     }
 
-    // Save the new order to MongoDB
-    const savedOrder = await Order.insertMany([newOrder]);
-    console.log(savedOrder);
+    let savedOrder;
+
+    if (paymentMethod === 'razorpay') {
+      // If payment method is razorpay, store data to session
+      req.session.orderCreated = newOrder;
+    } else {
+      // Otherwise, save the new order to MongoDB
+      savedOrder = await Order.insertMany([newOrder]);
+    }
+
 
     for (const item of selectedProducts) {
       let stock = item.product.stock - item.quantity;
@@ -877,7 +906,15 @@ const createNewOrder = async (
       }
     }
 
-    const order = savedOrder[0];
+    if (savedOrder) {
+      const order = savedOrder[0];
+      console.log("_____________________");
+      console.log(order);
+      console.log("_____________________");
+      return order;
+    } else {
+      console.log("Order stored in session successfully.");
+    }
 
     // Remove ordered products from the user's cart
     const updatedCart = await cart.findOneAndUpdate(
@@ -892,10 +929,10 @@ const createNewOrder = async (
 
 
     console.log("_____________________");
-    console.log(order);
+    console.log(Order);
     console.log("_____________________");
 
-    return order;
+    return Order;
   } catch (error) {
     console.error(error);
     throw error; // Rethrow the error to be handled outside the function
@@ -1059,13 +1096,17 @@ const postCheckout = async (req, res, next) => {
 
       try {
         const order = await razorpayInstance.orders.create(options);
-        const order_Details = await Order.findOne({ orderId: result.orderId });
+        const order_Details = await Order.findOne({ orderId: result.orderId }).populate('product.productId')
 
         console.log("/////////////////////updTED IS////////////////");
+
 
         console.log(order_Details);
 
         order_Details.orderId = order.id;
+        order_Details.orderstatus = 'failed'
+        order_Details.paymentStatus = 'failed'
+
 
         await order_Details.save();
 
@@ -1112,6 +1153,8 @@ const verify = async (req, res, next) => {
       try {
         // Find the order based on orderId
         const orderDataId = await Order.findOne({ orderId: payment_OrderId });
+
+
         console.log(payment_OrderId,'////////////////////////lir');
 
       
@@ -1120,22 +1163,40 @@ const verify = async (req, res, next) => {
         
     
         // If order exists
-        if (orderDataId) {
-          // Update payment status to "success"
-          await Order.updateOne({ orderId: payment_OrderId }, { paymentStatus: 'success' });
-          
-          console.log("Payment verification successful. Payment is successful.");
-      
-          // Send response with status 200 and the order ID
-          res.status(200).json(orderDataId._id);
-          console.log("Order ID:", orderDataId._id);
-      } else {
-          // Update payment status to "failed" if the order retrieval fails
-          await Order.updateOne({ orderId: payment_OrderId }, { paymentStatus: 'failed' });
-      
-          console.log("Order not found for the provided orderId.");
-          res.status(404).send("Order not found");
-      }
+   if (orderDataId) {
+          console.log(' njn vannu order sucess ayi 1 ');
+          try {
+            // Update payment status to "success"
+            await Order.updateOne({ orderId: payment_OrderId }, { $set: { paymentStatus: 'success', orderstatus: 'pending' }});
+
+            console.log("Payment verification successful. Payment is successful.");
+
+            // Retrieve the order details
+            const newOrder = await Order.findOne({ orderId: payment_OrderId });
+
+            // Store the order in session
+            req.session.orderCreated = newOrder;
+
+            // Send response with status 200 and the order ID
+            res.status(200).json(newOrder._id);
+            console.log("Order ID:", newOrder._id);
+          } catch (error) {
+            console.error("Error updating payment status:", error);
+            res.status(500).send("Internal Server Error");
+          }
+        } else {
+          console.log(' njn vannu order sucess ayi 2 ');
+          try {
+            // Update payment status to "failed" if the order retrieval fails
+            await Order.updateOne({ orderId: payment_OrderId }, { $set: { orderstatus: 'failed' }});
+            console.log(' njn vannu order sucess ayi 3'); 
+            console.log("Order not found for the provided orderId.");
+            res.status(404).send("Order not found");
+          } catch (error) {
+            console.error("Error updating payment status:", error);
+            res.status(500).send("Internal Server Error");
+          }
+        }
       } catch (error) {
         console.error("Error occurred during payment verification:", error);
         res.status(500).send("Internal Server Error");
@@ -1307,7 +1368,9 @@ const selectProduct = async (req, res, next) => {
 
 const genrateInvoice = async (req, res) => {
   try {
-    const orderId = req.query.orderId; // Extract orderId from query parameters
+    const orderId = req.query.orderId;
+    
+    console.log(orderId);// Extract orderId from query parameters
 
     // Find the order by its ID and populate the product details
     const order = await Order.findOne({ _id: orderId })
@@ -1366,12 +1429,6 @@ const genrateInvoice = async (req, res) => {
   }
 };
 
-
-const otpresend = (req,res)=>{
-
-
-
-}
 
 
 // Example usage: Pass the orderId to generate the invoice

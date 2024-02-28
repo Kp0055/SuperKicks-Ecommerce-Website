@@ -105,15 +105,6 @@ const excelSheet = async (req, res, next) => {
     }
 }
 
-module.exports = excelSheet;
-
-
-module.exports = excelSheet;
-
-
-
-
-
 module.exports = {
     pdfDoc,
     excelSheet

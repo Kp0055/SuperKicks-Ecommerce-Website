@@ -223,68 +223,57 @@ img {
 										</div>
 										<div class="tab-pane fade" id="tab-downloads" role="tabpanel" aria-labelledby="tab-downloads-link">
 											<h4><b>Orders</b></h4>
-											<table class="table">
-												<thead>
-													<tr>
-														<th scope="col"><b>Product Image</b></th>
-														<th scope="col"><b>Product Name</b></th>
-														<th scope="col"><b>Price</b></th>
-														<th scope="col"><b>Status</b></th>
-														<th scope="col"><b>Action</b></th>
-														<th scope="col"><b></b></th>
-
-													
-													</tr>
-												</thead>
-												<tbody>
-													<% if (Myorders && Myorders.length > 0) { %>
-														<% Myorders.forEach((order) => { %>
-														  <% order.product.forEach((product) => { %>
-															<tr>
-															  <td>
-																<img src="/category_img/<%= product.productId.image[0] %>" alt="Product Image" style="max-width: 100px; max-height: 100px;">
-															  </td>
-															  <td><%= product.productId.name %></td>
-															  <td><%= product.productId.price %></td>
-															  <td><%= order.orderstatus %></td>
-															  <td><button class="generate-pdf-btn btn btn-outline-info" data-order-id="<%= order._id %>">invoice</button></td>
-															  <td> 
-															  <script>
-																 // JavaScript
-																	document.addEventListener('DOMContentLoaded', () => {
-																		const tableBody = document.querySelector('tbody');
-
-																		tableBody.addEventListener('click', (event) => {
-																			if (event.target.classList.contains('generate-pdf-btn')) {
-																				const orderId = event.target.dataset.orderId;
-																				console.log(orderId);
-																				window.location.href = '/generate_invoice?orderId=' + orderId;
-																			}
-																		});
-																	});
-
-															  </script>
-															  
-
-															  <td>
-																<% if (product.cancelOrder === 'canceled') { %>
-																  <button type="button" class="btn btn-outline-secondary" disabled>Cancelled</button>
-																<% } else { %>
-																  <button type="button" class="btn btn-outline-danger" onclick="cancelOrder('<%= order._id %>', '<%= product.productId._id %>')">Cancel</button>
-																<% } %>
-															  </td>
-															</tr>
-														  <% }) %>
-														<% }) %>
-													  <% } else { %>
+											<div class="table-responsive">
+												<table class="table table-bordered">
+													<thead>
 														<tr>
-														  <td colspan="5">No orders available.</td>
+															<th scope="col">Product</th>
+															<th scope="col">Price</th>
+															<th scope="col">Status</th>
+															<th scope="col">Action</th>
 														</tr>
-													  <% } %>
-
+													</thead>
+													<tbody>
+														<% if (Myorders && Myorders.length > 0) { %>
+														<% Myorders.forEach((order) => { %>
+														<% order.product.forEach((product) => { %>
+														<tr>
+															<td>
+																<div class="d-flex align-items-center">
+																	<img src="/category_img/<%= product.productId.image[0] %>" alt="Product Image" style="max-width: 50px; max-height: 50px;" class="mr-2">
+																	<div>
+																		<div><b><%= product.productId.name %></b></div>
+																		<div>Order ID: <%= order._id %></div>
+																	</div>
+																</div>
+															</td>
+															<td><%= product.productId.price %></td>
+															<td><%= order.orderstatus %></td>
+															<td>
+																<div class="d-flex flex-column">
+																	<button class="generate-pdf-btn btn btn-outline-info btn-sm mb-1" data-order-id="<%= order._id %>">Invoice</button>
+																	<% if (product.cancelOrder === 'canceled') { %>
+																	<button type="button" class="btn btn-outline-secondary btn-sm" disabled>Cancelled</button>
+																	<% } else { %>
+																	<button type="button" class="btn btn-outline-danger btn-sm" onclick="cancelOrder('<%= order._id %>', '<%= product.productId._id %>')">Cancel</button>
+																	<% } %>
+																</div>
+															</td>
+														</tr>
+														<% }) %>
+														<% }) %>
+														<% } else { %>
+														<tr>
+															<td colspan="4">No orders available.</td>
+														</tr>
+														<% } %>
 													</tbody>
-											</table>
+												</table>
+											</div>
 										</div>
+										
+										
+										
 										
 										
 										<div class="tab-pane fade" id="tab-address" role="tabpanel" aria-labelledby="tab-address-link">

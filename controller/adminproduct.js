@@ -64,11 +64,12 @@ const postProduct = async (req, res, next) => {
       Description,
       parentCategory,
       Stock,
-      Size,
       color,
       Discount,
       Price,
     } = req.body;
+
+    console.log(req.body);
 
     const filePaths = req.files.map((file) => file.filename);
     // console.log(filePaths);
@@ -78,18 +79,18 @@ const postProduct = async (req, res, next) => {
       parentCategory: parentCategory,
       Description: Description,
       stock: Stock,
-      size: Size,
       color: color,
       discount: Discount,
       price: Price,
       image: filePaths,
     });
+    res.redirect("/admin/product_list");
   } catch (error) {
     console.error(error);
     next(error);
   }
 
-  res.redirect("/admin/product_list");
+
 };
 
 const editProduct = async (req, res, next) => {

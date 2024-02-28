@@ -91,7 +91,7 @@ router.post("/remove_coupon", verifyJwt, coupon.couponRemove);
 
 router.post("/sort", productController.sort);
 
-router.post('/resendOtp',use.otpresend)
+router.get('/resendOtp',use.otpresend);
  
 
 
