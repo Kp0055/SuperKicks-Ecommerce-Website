@@ -251,7 +251,22 @@ img {
 															<td><%= order.orderstatus %></td>
 															<td>
 																<div class="d-flex flex-column">
-																	<button class="generate-pdf-btn btn btn-outline-info btn-sm mb-1" data-order-id="<%= order._id %>">Invoice</button>
+																	<button class="generate-pdf-btn btn btn-outline-info" data-order-id="<%= order._id %>">invoice</button>
+																	<script>
+																	   // JavaScript
+																		  document.addEventListener('DOMContentLoaded', () => {
+																			  const tableBody = document.querySelector('tbody');
+	  
+																			  tableBody.addEventListener('click', (event) => {
+																				  if (event.target.classList.contains('generate-pdf-btn')) {
+																					  const orderId = event.target.dataset.orderId;
+																					  console.log(orderId);
+																					  window.location.href = '/generate_invoice?orderId=' + orderId;
+																				  }
+																			  });
+																		  });
+	  
+																	</script>
 																	<% if (product.cancelOrder === 'canceled') { %>
 																	<button type="button" class="btn btn-outline-secondary btn-sm" disabled>Cancelled</button>
 																	<% } else { %>
