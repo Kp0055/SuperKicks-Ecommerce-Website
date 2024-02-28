@@ -9,7 +9,7 @@ const pdf = require('../controller/createPdf');
 const banner = require('../controller/banner')
 const banner_upload = require('../middileware/bannermulter')
 const coupon = require('../controller/couponController')
-
+   
 
 router.get('/',admin_Verified,use.adminHome)
 
