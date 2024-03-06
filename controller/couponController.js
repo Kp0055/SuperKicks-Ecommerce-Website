@@ -215,6 +215,7 @@ const couponRemove = async (req,res,next)=>{
     console.log('keri 2');
   
     console.log('keri 3');
+
     updatePrice.totalamount = sessionData.findUserCart ;
     console.log('keri 4');
     await updatePrice.save();

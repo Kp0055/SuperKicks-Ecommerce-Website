@@ -457,7 +457,6 @@
     document.querySelector('#editcouponForm').addEventListener('submit', function(event) {
         event.preventDefault();
 
-        alert('edit validation 1')
 
         // Coupon Code: Alphanumeric and underscore, length between 3 and 10
         let code = document.getElementById('code').value;
@@ -493,7 +492,7 @@
           document.getElementById('usageLimitError').textContent = 'Invalid usage limit. Usage limit should be a positive integer.';
           return;
         }
-        alert('edit validation 5')
+
         // min Code and max Code: Positive integer
         let min = document.getElementById('min').value;
         let max = document.getElementById('max').value;

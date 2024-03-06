@@ -33,14 +33,7 @@
                     Verify
                   </button>
 
-                  <p id="countdownTimer" class="text-muted mb-0">
-                    Resend OTP in <span id="countdown">60</span> seconds
-                  </p>
-      
-                  <p class="resend text-muted mb-0">
-                    Didn't receive code? 
-                    <a id="resendLink" href="#" onclick="sendOtp()">Request again</a>
-                  </p>
+                
                 </div>
               </div>
             </div>
@@ -51,34 +44,7 @@
 
     <script src="/javascripts/otp.js"></script>
 
-    <script>let countdown = 60; // Initial countdown value in seconds
-
-      function startCountdown() {
-        const timerElement = document.getElementById('countdown');
-      
-        // Update the countdown timer every second
-        const timer = setInterval(() => {
-          countdown--;
-          timerElement.textContent = countdown;
-      
-          if (countdown <= 0) {
-            clearInterval(timer); // Stop the timer
-            document.getElementById('resendLink').classList.remove('disabled');
-            document.getElementById('countdownTimer').style.display = 'none'; // Hide the timer
-          }
-        }, 1000);
-      }
-      
-      function sendOtp() {
-        // Code to send the OTP
-        // Disable the resend link and show the countdown timer
-        document.getElementById('resendLink').classList.add('disabled');
-        document.getElementById('countdownTimer').style.display = 'block';
-      
-        // Start the countdown timer
-        startCountdown();
-      }
-      </script>
+  
    
     
     

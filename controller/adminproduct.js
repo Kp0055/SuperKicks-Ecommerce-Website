@@ -93,6 +93,7 @@ const postProduct = async (req, res, next) => {
 
 };
 
+
 const editProduct = async (req, res, next) => {
   const dataidd = req.params.id;
   const { name, Description, parentCategory, Stock, color, Discount, Price } =

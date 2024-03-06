@@ -476,7 +476,7 @@ async function cancelOrder(Order, Product) {
           });
 
           if (response.ok) {
-            alert('its working')
+          
               Swal.fire({
                   title: "Canceled!",
                   text: "It has been Canceled",

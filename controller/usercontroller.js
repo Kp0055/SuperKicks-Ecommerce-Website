@@ -222,6 +222,21 @@ const checkout = async (req, res, next) => {
       (xx) => xx.isSelected === true
     );
 
+
+    //corrected total price 
+
+    // let totalAmount = 0;
+
+    //   selectedProducts.forEach((selectedProduct) => {
+    //   const price = selectedProduct.product.price;
+    //   const quantity = selectedProduct.quantity;
+    //   totalAmount += price * quantity;
+    //   });
+
+    //   req.session.orginalAmountCheckout = totalAmount;
+
+
+
     if (selectedProducts.length === 0) {
       return res.redirect("/cart");
     }
@@ -1004,7 +1019,7 @@ const postCheckout = async (req, res, next) => {
       return total + item.quantity * item.product.price;
     }, 0);
 
-    let finalAmount = totalAmountSelected;
+    let finalAmount = totalAmountSelected;    
     let discountTotal = 0;
 
     if (req.session && req.session.couponData) {
@@ -1379,18 +1394,34 @@ const orderCancel = async (req, res, next) => {
 
 const selectProduct = async (req, res, next) => {
   try {
+
+    console.log('hrlooo');
+    console.log(req.body.isChecked+'//////////////');
     const productSelected = req.params.selectedProduct_Id;
     const profileId = req.userId;
 
-    const profileFound = await cart.findOne({ user: profileId });
-
+    const profileFound = await cart.findOne({ user: profileId }).populate('product.product');
+    console.log(profileFound);
     let cartSelected = profileFound.product.find(
-      (xx) => xx.product.toString() === productSelected
+      (xx) => xx.product._id.toString() === productSelected
     );
+    console.log(cartSelected);
+
+   
 
     // Update isSelected based on isChecked sent from frontend
     cartSelected.isSelected = req.body.isChecked;
+    
+      let totalAmount=0
+    for(let item of profileFound.product){
+      if(item.isSelected){
+      totalAmount+=(item.quantity * item.product.price);
+      }
+    }
+    console.log(totalAmount);
 
+  
+    profileFound.totalamount=totalAmount;
     await profileFound.save();
 
     res.status(200).send("success");

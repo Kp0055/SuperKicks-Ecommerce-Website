@@ -50,7 +50,10 @@ router.get('/coupon_List',admin_Verified,coupon.couponList)
 router.get('/coupon_Edit/:id',admin_Verified,coupon.couponEdit)
  
 
-
+function log(req,res,next){
+    console.log(req)
+    next();
+}
 
 
 
@@ -62,7 +65,7 @@ router.post('/add_category',upload.single('image'),admin_Verified,cat.postCatego
 
 router.post('/add_product',upload.array('image',5),admin_Verified,product_Control.postProduct)
 
-router.post('/product_edit/:id',upload.array('image',5),admin_Verified,product_Control.editProduct)
+router.post('/product_edit/:id',log,upload.array('image',5),admin_Verified,product_Control.editProduct)
 
 router.post('/listuser/:userId',admin_Verified,use.block)
 

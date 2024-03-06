@@ -431,18 +431,27 @@
                 </button>
             </div>
             <div class="modal-body">
-                <!-- EJS template for coupon selection -->
-                <p id="couponDisplay">Select a Coupon:</p>
-                <% couponData.forEach(function(data) { %>
-                <div>
-                    <input type="text" id="<%= data.code %>" name="coupon" value="<%= data.code %>">
-                    <label><b></b></label>
-                    <label style="color: green;"><b><%= data.discount %>%</b></label>
-                </div>
-                <br>
-                <% }); %>
-                <input type="text" id="copyInput" value="" style="position: absolute; top: -9999px;">
-            </div>
+              <!-- EJS template for coupon selection -->
+              <table>
+                  <thead>
+                      <tr>
+                          <th>Coupon Code</th>
+                          <th>Discount (%)</th>
+                          <th>Max Amount</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      <% couponData.forEach(function(data) { %>
+                      <tr>
+                          <td><%= data.code %></td>
+                          <td style="color: green;"><%= data.discount %>%</td>
+                          <td style="color: blue;"><%= data.maxAmount %></td>
+                      </tr>
+                      <% }); %>
+                  </tbody>
+              </table>
+              <input type="text" id="copyInput" value="" style="position: absolute; top: -9999px;">
+          </div>
             <div class="modal-footer">
                 <!-- Button to remove the coupon -->
               
@@ -595,9 +604,7 @@
                               description: 'Payment for Order',
                               order_id: data.order.id,
                               handler: function (response){
-                                  console.log(response);
-                                  alert(response.razorpay_order_id);
-                                  alert(response.razorpay_signature);
+                             
 
                                   fetch('/verify_Payment', {
                                       method: 'POST',

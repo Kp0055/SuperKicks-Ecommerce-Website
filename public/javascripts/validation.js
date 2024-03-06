@@ -1,7 +1,7 @@
 //validation for sign up
 
 function signupvalidateForm() {
-  alert('VANNU 0')
+
   var firstName = document.getElementById('register-fname').value;
   var lastName = document.getElementById('register-lname').value;
   var email = document.getElementById('register-email').value;

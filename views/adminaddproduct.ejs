@@ -425,7 +425,7 @@
                     <h4>Main Image</h4>
                 </div>
                 <div class="fallback mt-5 ml-4 mb-5">
-                    <input name="crop" type="file" id="cropimage" onchange="cropBanner('cropimage')" accept="image/*" />
+                    <input name="image" type="file" id="cropimage" onchange="cropBanner('cropimage')" accept="image/*" />
                     <img src="" id="show_cropimage" style="max-height: 300px; display: block;" alt="">
                     <button class="btn btn-success" style="display: none;" id="save_cropimage" onclick="uploadBannerImage('cropimage')">Save</button>
                     <span id="cropfileError" style="color: red;"></span>
@@ -528,6 +528,7 @@ document.querySelector('input[type=file]').addEventListener('change', previewIma
                             const input = document.getElementById(id);
                           console.log(input);
                             const canvas = document.getElementById(`show_${id}`);
+                            console.log(input.files);
                             const file = input.files[0];
 
                             if (file) {
@@ -552,7 +553,9 @@ document.querySelector('input[type=file]').addEventListener('change', previewIma
                                 }
                             }
                         }
-
+                         function hell(event){
+                          console.log(event)
+                         }
                         function uploadBannerImage(id) {
                             const canvas = cropper.getCroppedCanvas();
                             if (canvas) {
@@ -560,17 +563,20 @@ document.querySelector('input[type=file]').addEventListener('change', previewIma
                                     const fileName = 'croppedImage.jpg';
                                     const file = new File([blob], fileName, { type: 'image/jpeg' });
                                     const input = document.getElementById(id);
+                                    console.log(input);
 
                                     if (DataTransfer && FileList) {
                                         const dataTransfer = new DataTransfer();
                                         dataTransfer.items.add(file);
+                                        console.log(dataTransfer,input.files);
                                         input.files = dataTransfer.files;
+                                        console.log(dataTransfer,input.files);
                                     } else {
                                         console.error('FileList and DataTransfer are not supported in this browser.');
                                     }
 
                                     const showImg = document.getElementById(`show_${id}`);
-                                    showImg.src = URL.createObjectURL(blob);
+                                    // showImg.src = URL.createObjectURL(blob);
 
                                     cropper.destroy();
                                 });

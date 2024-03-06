@@ -5,6 +5,7 @@ const storage = multer.diskStorage({
     cb(null, "public/category_img");
   },
   filename: function (req, file, cb) {
+   
     cb(null, Date.now() + " " + file.originalname);
   },
 });
